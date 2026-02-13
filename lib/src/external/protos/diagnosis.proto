@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package ar_sight;
+
+// Preparado para implementação gRPC v2
+message DiagnosisRequest {
+  bytes image_data = 1;
+  string scene_id = 2;
+}
+
+message DiagnosisResponse {
+  string diagnosis_id = 1;
+  string result = 2;
+  float confidence = 3;
+  int64 timestamp = 4;
+}
