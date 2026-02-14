@@ -1,7 +1,7 @@
 // main.dart: Ponto de entrada da aplicação
 
 import 'package:flutter/material.dart';
-import 'src/presenter/pages/scene_eval_page.dart';
+import 'src/presenter/pages/home_page.dart';
 
 void main() {
   runApp(const ArSightApp());
@@ -15,7 +15,9 @@ class ArSightApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AR_Sight',
-      home: const SceneEvalPage(),
+      theme: ThemeData(useMaterial3: true),
+      home: const HomePage(),
     );
   }
 }
+

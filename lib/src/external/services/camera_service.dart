@@ -14,25 +14,40 @@ class CameraService {
     required Duration duration, // Duração total da captura
     required Duration interval, // Intervalo entre cada captura
     int maxFrames = 10, // Número máximo de frames a serem capturados
+    void Function(int count)? onFrameCaptured, // Callback para notificar quando um frame é capturado
   }) async {
     // Verifica se a câmera está inicializada
     final frames = <Uint8List>[];
+    final startTime = DateTime.now();
 
-    // Define o tempo de término da captura
-    final endAt = DateTime.now().add(duration);
-
-    // Loop de captura de frames
-    while (DateTime.now().isBefore(endAt) && frames.length < maxFrames) {
-      // Evita chamar takePicture simultâneo
+    // Loop baseado no número de frames
+    for (int i = 0; i < maxFrames; i++) {
+      // Calcula quando este frame deveria ser capturado
+      final targetTime = startTime.add(interval * i);
+      final now = DateTime.now();
+      
+      // Se passou do tempo de duração, para
+      if (now.difference(startTime) >= duration) {
+        break;
+      }
+      
+      // Se ainda não chegou na hora deste frame, aguarda
+      if (now.isBefore(targetTime)) {
+        await Future.delayed(targetTime.difference(now));
+      }
+      
+      // Verifica se a câmera está inicializada
       if (!controller.value.isInitialized) {
         throw Exception('Camera not initialized');
       }
+      
       // Verifica se a câmera está ocupada tirando uma foto
       if (controller.value.isTakingPicture) {
-        // Aguarda um curto período antes de tentar novamente
         await Future.delayed(const Duration(milliseconds: 50));
+        i--; // Tenta novamente
         continue;
       }
+      
       // Captura um frame
       try {
         // Captura a imagem e obtém o arquivo temporário
@@ -44,14 +59,15 @@ class CameraService {
         // Adiciona os bytes do frame à lista de frames capturados
         frames.add(bytes);
 
-        debugPrint('Captured frame ${frames.length}/$maxFrames');
+        // aqui atualiza progresso
+        onFrameCaptured?.call(frames.length);
 
+        debugPrint('Captured frame ${frames.length}/$maxFrames');
+        
       } catch (e) {
         debugPrint('Frame capture error: $e');
         break; // Sai do loop em caso de erro para evitar capturas repetidas
       }
-      // Aguarda o intervalo definido antes de capturar o próximo frame
-      await Future.delayed(interval);
     }
 
     debugPrint('✅ Finished capturing frames: ${frames.length} frames captured');

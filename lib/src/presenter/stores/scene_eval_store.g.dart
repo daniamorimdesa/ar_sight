@@ -8,94 +8,115 @@ part of 'scene_eval_store.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
-mixin _$SceneEvalStore on _SceneEvalStoreBase, Store {
-  late final _$isLoadingAtom = Atom(
-    name: '_SceneEvalStoreBase.isLoading',
+mixin _$SceneEvalStore on _SceneEvalStore, Store {
+  late final _$isCapturingAtom = Atom(
+    name: '_SceneEvalStore.isCapturing',
     context: context,
   );
 
   @override
-  bool get isLoading {
-    _$isLoadingAtom.reportRead();
-    return super.isLoading;
+  bool get isCapturing {
+    _$isCapturingAtom.reportRead();
+    return super.isCapturing;
   }
 
   @override
-  set isLoading(bool value) {
-    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
-      super.isLoading = value;
+  set isCapturing(bool value) {
+    _$isCapturingAtom.reportWrite(value, super.isCapturing, () {
+      super.isCapturing = value;
     });
   }
 
-  late final _$errorAtom = Atom(
-    name: '_SceneEvalStoreBase.error',
+  late final _$capturedFramesAtom = Atom(
+    name: '_SceneEvalStore.capturedFrames',
     context: context,
   );
 
   @override
-  String? get error {
-    _$errorAtom.reportRead();
-    return super.error;
+  int get capturedFrames {
+    _$capturedFramesAtom.reportRead();
+    return super.capturedFrames;
   }
 
   @override
-  set error(String? value) {
-    _$errorAtom.reportWrite(value, super.error, () {
-      super.error = value;
+  set capturedFrames(int value) {
+    _$capturedFramesAtom.reportWrite(value, super.capturedFrames, () {
+      super.capturedFrames = value;
     });
   }
 
-  late final _$diagnosisAtom = Atom(
-    name: '_SceneEvalStoreBase.diagnosis',
+  late final _$progressAtom = Atom(
+    name: '_SceneEvalStore.progress',
     context: context,
   );
 
   @override
-  dynamic get diagnosis {
-    _$diagnosisAtom.reportRead();
-    return super.diagnosis;
+  double get progress {
+    _$progressAtom.reportRead();
+    return super.progress;
   }
 
   @override
-  set diagnosis(dynamic value) {
-    _$diagnosisAtom.reportWrite(value, super.diagnosis, () {
-      super.diagnosis = value;
+  set progress(double value) {
+    _$progressAtom.reportWrite(value, super.progress, () {
+      super.progress = value;
     });
   }
 
-  late final _$evaluateSceneAsyncAction = AsyncAction(
-    '_SceneEvalStoreBase.evaluateScene',
+  late final _$secondsRemainingAtom = Atom(
+    name: '_SceneEvalStore.secondsRemaining',
     context: context,
   );
 
   @override
-  Future<void> evaluateScene(String imagePath) {
-    return _$evaluateSceneAsyncAction.run(() => super.evaluateScene(imagePath));
+  int get secondsRemaining {
+    _$secondsRemainingAtom.reportRead();
+    return super.secondsRemaining;
   }
 
-  late final _$_SceneEvalStoreBaseActionController = ActionController(
-    name: '_SceneEvalStoreBase',
+  @override
+  set secondsRemaining(int value) {
+    _$secondsRemainingAtom.reportWrite(value, super.secondsRemaining, () {
+      super.secondsRemaining = value;
+    });
+  }
+
+  late final _$lastCapturedFramesAtom = Atom(
+    name: '_SceneEvalStore.lastCapturedFrames',
     context: context,
   );
 
   @override
-  void reset() {
-    final _$actionInfo = _$_SceneEvalStoreBaseActionController.startAction(
-      name: '_SceneEvalStoreBase.reset',
-    );
-    try {
-      return super.reset();
-    } finally {
-      _$_SceneEvalStoreBaseActionController.endAction(_$actionInfo);
-    }
+  List<Uint8List> get lastCapturedFrames {
+    _$lastCapturedFramesAtom.reportRead();
+    return super.lastCapturedFrames;
+  }
+
+  @override
+  set lastCapturedFrames(List<Uint8List> value) {
+    _$lastCapturedFramesAtom.reportWrite(value, super.lastCapturedFrames, () {
+      super.lastCapturedFrames = value;
+    });
+  }
+
+  late final _$startCaptureAsyncAction = AsyncAction(
+    '_SceneEvalStore.startCapture',
+    context: context,
+  );
+
+  @override
+  Future<void> startCapture(CameraController controller) {
+    return _$startCaptureAsyncAction.run(() => super.startCapture(controller));
   }
 
   @override
   String toString() {
     return '''
-isLoading: ${isLoading},
-error: ${error},
-diagnosis: ${diagnosis}
+isCapturing: ${isCapturing},
+capturedFrames: ${capturedFrames},
+progress: ${progress},
+secondsRemaining: ${secondsRemaining},
+lastCapturedFrames: ${lastCapturedFrames}
     ''';
   }
 }

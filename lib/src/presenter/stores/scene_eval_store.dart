@@ -1,38 +1,104 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'package:camera/camera.dart';
+import 'package:dio/dio.dart';
 import 'package:mobx/mobx.dart';
+import '../../external/adapters/scene_diagnosis_adapter.dart';
+import '../../external/datasources/fake_scene_datasource.dart';
+import '../../external/datasources/scene_datasource.dart';
+import '../../external/services/camera_service.dart';
+import '../../models/scene_diagnosis.dart';
 
 part 'scene_eval_store.g.dart';
 
-class SceneEvalStore = _SceneEvalStoreBase with _$SceneEvalStore;
+class SceneEvalStore = _SceneEvalStore with _$SceneEvalStore;
 
-abstract class _SceneEvalStoreBase with Store {
+abstract class _SceneEvalStore with Store {
+  Timer? _timer;
+  final dio = Dio();
+  final SceneDatasource datasource = FakeSceneDatasource();
+  late SceneDiagnosis lastResult;
+
   @observable
-  bool isLoading = false;
+  bool isCapturing = false;
 
   @observable
-  String? error;
+  int capturedFrames = 0;
 
   @observable
-  dynamic diagnosis;
+  double progress = 0.0;
 
-  @action
-  Future<void> evaluateScene(String imagePath) async {
-    isLoading = true;
-    error = null;
-    
-    try {
-      // TODO: Implementar lógica de avaliação
-      await Future.delayed(const Duration(seconds: 2));
-    } catch (e) {
-      error = e.toString();
-    } finally {
-      isLoading = false;
-    }
+  @observable
+  int secondsRemaining = 10;
+
+  @observable
+  List<Uint8List> lastCapturedFrames = const [];
+
+  void _startCountdown(Duration duration) {
+    final start = DateTime.now();
+    final end = start.add(duration);
+
+    _timer?.cancel();
+
+    _timer = Timer.periodic(
+      const Duration(milliseconds: 100),
+      (_) {
+        final now = DateTime.now();
+
+        if (now.isAfter(end)) {
+          _timer?.cancel();
+          return;
+        }
+
+        final elapsed = now.difference(start);
+        final remaining = end.difference(now);
+
+        runInAction(() {
+          progress = elapsed.inMilliseconds / duration.inMilliseconds;
+          secondsRemaining = remaining.inSeconds + 1;
+        });
+      },
+    );
   }
 
   @action
-  void reset() {
-    isLoading = false;
-    error = null;
-    diagnosis = null;
+  Future<void> startCapture(CameraController controller) async {
+    isCapturing = true;
+    capturedFrames = 0;
+
+    const duration = Duration(seconds: 10);
+
+    _startCountdown(duration);
+
+    try {
+      final cameraService = CameraService(controller);
+
+      final frames = await cameraService.captureFor(
+        duration: duration,
+        interval: const Duration(seconds: 1),
+        maxFrames: 10,
+        onFrameCaptured: (count) {
+          runInAction(() {
+            capturedFrames = count;
+          });
+        },
+      );
+
+      capturedFrames = frames.length;
+      progress = 1.0;
+      secondsRemaining = 0;
+
+      lastCapturedFrames = frames;
+
+      final response = await datasource.evaluateScene(frames);
+      lastResult = SceneDiagnosisAdapter.fromMap(response.first);
+    } finally {
+      _timer?.cancel();
+      isCapturing = false;
+    }
+  }
+
+  void dispose() {
+    _timer?.cancel();
   }
 }
