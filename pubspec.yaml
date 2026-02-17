@@ -22,6 +22,9 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   dio: ^5.4.0
   camera: ^0.11.0
+  lottie: ^3.0.0
+  video_player: ^2.8.0
+  google_fonts: ^6.1.0
 
 
 dev_dependencies:
@@ -35,9 +38,23 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/logo/
+    - assets/logo/ARSIGHT_logo.svg
+    - assets/icon/icon1.png
+    - assets/icon/icon2.png
+    - assets/icon/icon3.png
+    - assets/icon/icon3_rm_bg.png
+    - assets/videos/ar_bg_1.mp4
+    - assets/videos/ar_bg_2.mp4
+    - assets/videos/ar_bg_3.mp4
+    - assets/videos/ar_bg_4.mp4
+    - assets/lottie/robot.json
+    - assets/lottie/cat.json
+    - assets/lottie/bear.json
+    - assets/lottie/girl.json
+    - assets/lottie/blackcat.json
+    - assets/lottie/bluecat.json
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/logo/logo-todos.png"
+  image_path: "assets/icon/icon3.png"

@@ -1,14 +1,19 @@
-// main.dart: Ponto de entrada da aplicação
-
 import 'package:flutter/material.dart';
-import 'src/presenter/pages/home_page.dart';
+import 'package:provider/provider.dart';
+import 'src/presenter/pages/home/home_page.dart';
+import 'src/presenter/stores/scene_eval_store.dart';
 
 void main() {
-  runApp(const ArSightApp());
+  runApp(
+    Provider<SceneEvalStore>(
+      create: (_) => SceneEvalStore(),
+      child: const MainApp(),
+    ),
+  );
 }
 
-class ArSightApp extends StatelessWidget {
-  const ArSightApp({super.key});
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,4 +25,3 @@ class ArSightApp extends StatelessWidget {
     );
   }
 }
-

@@ -99,6 +99,24 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
     });
   }
 
+  late final _$lastResultAtom = Atom(
+    name: '_SceneEvalStore.lastResult',
+    context: context,
+  );
+
+  @override
+  SceneDiagnosis? get lastResult {
+    _$lastResultAtom.reportRead();
+    return super.lastResult;
+  }
+
+  @override
+  set lastResult(SceneDiagnosis? value) {
+    _$lastResultAtom.reportWrite(value, super.lastResult, () {
+      super.lastResult = value;
+    });
+  }
+
   late final _$startCaptureAsyncAction = AsyncAction(
     '_SceneEvalStore.startCapture',
     context: context,
@@ -116,7 +134,8 @@ isCapturing: ${isCapturing},
 capturedFrames: ${capturedFrames},
 progress: ${progress},
 secondsRemaining: ${secondsRemaining},
-lastCapturedFrames: ${lastCapturedFrames}
+lastCapturedFrames: ${lastCapturedFrames},
+lastResult: ${lastResult}
     ''';
   }
 }
