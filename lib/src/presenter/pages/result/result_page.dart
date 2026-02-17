@@ -1,3 +1,4 @@
+// result_page: exibe resultados da análise, incluindo diagnóstico, métricas e recomendações.
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
