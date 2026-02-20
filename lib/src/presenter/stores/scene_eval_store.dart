@@ -1,7 +1,10 @@
+// scene_eval_store.dart: responsável por gerenciar o estado da captura e avaliação da cena, incluindo a contagem regressiva, o progresso da captura, os frames capturados e o resultado da avaliação.
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:ar_sight/src/external/datasources/scene_upload_datasource.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import '../../external/adapters/scene_diagnosis_adapter.dart';
 import '../../external/datasources/fake_scene_datasource.dart';
@@ -11,14 +14,23 @@ import '../../models/scene_diagnosis.dart';
 
 part 'scene_eval_store.g.dart';
 
+// comando para rebuildar store:  dart run build_runner build --delete-conflicting-outputs
+
 class SceneEvalStore = _SceneEvalStore with _$SceneEvalStore;
 
 abstract class _SceneEvalStore with Store {
   Timer? _timer; // Timer para contagem regressiva e atualização de progresso
-  final dio =
-      Dio(); // dio é usado apenas para o SceneDatasourceImpl, mas mantemos aqui para facilitar a troca futura
-  final SceneDatasource datasource =
-      FakeSceneDatasource(); // Usamos o fake datasource por enquanto
+
+  // Instância do Dio para fazer requisições HTTP
+  final dio = Dio();
+
+  // Datasource fake para avaliação da cena, apenas para testes de UI sem depender do backend
+  final SceneDatasource datasource = FakeSceneDatasource();
+
+  // Datasource para upload dos frames, usado para testar a comunicação com o backend
+  late final SceneUploadDatasource uploadDatasource = SceneUploadDatasourceImpl(
+    dio,
+  );
 
   // flag para indicar se a captura está em andamento
   @observable
@@ -43,6 +55,19 @@ abstract class _SceneEvalStore with Store {
   // resultado da última avaliação
   @observable
   SceneDiagnosis? lastResult;
+
+  // flag para indicar se o upload dos frames está em andamento
+  @observable
+  bool isUploading = false;
+
+  // mensagem de erro do upload, caso ocorra
+  @observable
+  String? uploadError;
+
+  // resposta do upload, contendo informações como session_id, caso o upload seja bem-sucedido
+  @observable
+  Map<String, dynamic>? lastUploadResponse;
+
   //--------------------------------------------------------------------------------------------------------------------
   // método para iniciar a captura e avaliação da cena
   void _startCountdown(Duration duration) {
@@ -115,6 +140,9 @@ abstract class _SceneEvalStore with Store {
         lastCapturedFrames = frames;
       });
 
+      // chama o upload das imagens para testar a comunicação com o backend
+      await uploadLastFrames();
+
       // Envia os frames capturados para avaliação e aguarda a resposta
       final response = await datasource.evaluateScene(frames);
 
@@ -135,5 +163,52 @@ abstract class _SceneEvalStore with Store {
   // método para limpar os dados da última avaliação
   void dispose() {
     _timer?.cancel();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+
+  // método para enviar os frames capturados para upload e receber as informações de upload
+  @action
+  Future<void> uploadLastFrames({String? sessionId}) async {
+    uploadError = null;
+    lastUploadResponse = null;
+
+    if (lastCapturedFrames.isEmpty) {
+      uploadError = 'Não há frames capturados para enviar.';
+      return;
+    }
+
+    isUploading = true;
+    try {
+      // Se um sessionId foi fornecido, use-o; caso contrário, gere um novo sessionId baseado no timestamp atual
+      final sid = sessionId ?? DateTime.now().millisecondsSinceEpoch.toString();
+
+      // confirma que vai tentar enviar as imagens
+      debugPrint('Upload: enviando ${lastCapturedFrames.length} frames... session_id=$sid');
+
+      // Envia os frames para upload e aguarda a resposta do backend
+      final response = await uploadDatasource.uploadFrames(
+        lastCapturedFrames,
+        sessionId: sid,
+      );
+
+      // confirma que recebeu resposta do backend
+       debugPrint('Upload: resposta = ${response.toString()}');
+       
+      // Quando a resposta é recebida, atualiza as informações de upload na interface
+      runInAction(() {
+        lastUploadResponse = response;
+      });
+    } catch (e) {
+      // Em caso de erro, registra a mensagem de erro e imprime no console para depuração
+      debugPrint('Upload: erro = $e');
+      runInAction(() {
+        uploadError = e.toString();
+      });
+    } finally {
+      runInAction(() {
+        isUploading = false;
+      });
+    }
   }
 }

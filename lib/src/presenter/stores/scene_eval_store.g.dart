@@ -117,6 +117,60 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
     });
   }
 
+  late final _$isUploadingAtom = Atom(
+    name: '_SceneEvalStore.isUploading',
+    context: context,
+  );
+
+  @override
+  bool get isUploading {
+    _$isUploadingAtom.reportRead();
+    return super.isUploading;
+  }
+
+  @override
+  set isUploading(bool value) {
+    _$isUploadingAtom.reportWrite(value, super.isUploading, () {
+      super.isUploading = value;
+    });
+  }
+
+  late final _$uploadErrorAtom = Atom(
+    name: '_SceneEvalStore.uploadError',
+    context: context,
+  );
+
+  @override
+  String? get uploadError {
+    _$uploadErrorAtom.reportRead();
+    return super.uploadError;
+  }
+
+  @override
+  set uploadError(String? value) {
+    _$uploadErrorAtom.reportWrite(value, super.uploadError, () {
+      super.uploadError = value;
+    });
+  }
+
+  late final _$lastUploadResponseAtom = Atom(
+    name: '_SceneEvalStore.lastUploadResponse',
+    context: context,
+  );
+
+  @override
+  Map<String, dynamic>? get lastUploadResponse {
+    _$lastUploadResponseAtom.reportRead();
+    return super.lastUploadResponse;
+  }
+
+  @override
+  set lastUploadResponse(Map<String, dynamic>? value) {
+    _$lastUploadResponseAtom.reportWrite(value, super.lastUploadResponse, () {
+      super.lastUploadResponse = value;
+    });
+  }
+
   late final _$startCaptureAsyncAction = AsyncAction(
     '_SceneEvalStore.startCapture',
     context: context,
@@ -127,6 +181,18 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
     return _$startCaptureAsyncAction.run(() => super.startCapture(controller));
   }
 
+  late final _$uploadLastFramesAsyncAction = AsyncAction(
+    '_SceneEvalStore.uploadLastFrames',
+    context: context,
+  );
+
+  @override
+  Future<void> uploadLastFrames({String? sessionId}) {
+    return _$uploadLastFramesAsyncAction.run(
+      () => super.uploadLastFrames(sessionId: sessionId),
+    );
+  }
+
   @override
   String toString() {
     return '''
@@ -135,7 +201,10 @@ capturedFrames: ${capturedFrames},
 progress: ${progress},
 secondsRemaining: ${secondsRemaining},
 lastCapturedFrames: ${lastCapturedFrames},
-lastResult: ${lastResult}
+lastResult: ${lastResult},
+isUploading: ${isUploading},
+uploadError: ${uploadError},
+lastUploadResponse: ${lastUploadResponse}
     ''';
   }
 }
