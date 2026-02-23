@@ -51,7 +51,9 @@ class SceneUploadDatasourceImpl implements SceneUploadDatasource {
     try {
       final response = await dio.post(
         // confirme que está usando seu IP real
-        'http://192.168.15.4:8000/upload/batch',
+        // 'http://192.168.15.4:8000/upload/batch', //
+        // 'http://192.168.158.44:8000/upload/batch', // ip do lab no Softex_Conv
+        'http://10.196.5.159:8000/upload/batch', // ip internet meu celular
         data: formData,
         options: Options(
           sendTimeout: const Duration(seconds: 60),
