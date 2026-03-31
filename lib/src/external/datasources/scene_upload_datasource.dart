@@ -3,6 +3,7 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Interface abstrata para o datasource de upload de cena, definindo o método para enviar os frames para o backend e receber as informações de upload
@@ -18,8 +19,8 @@ class SceneUploadDatasourceImpl implements SceneUploadDatasource {
 
   SceneUploadDatasourceImpl(this.dio);
 
-  // Substituir pelo IP do backend
-  static const String baseUrl = 'http://10.196.5.159:8000';
+  // Base URL carregado do arquivo .env
+  static String get baseUrl => dotenv.env['BASE_URL'] ?? 'http://localhost:8000';
 
   // Método para enviar os frames para o backend e receber as informações de upload para cada frame, como o batch_id gerado no backend
   @override

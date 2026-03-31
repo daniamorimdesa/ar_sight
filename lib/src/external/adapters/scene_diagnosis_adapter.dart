@@ -17,6 +17,9 @@ class SceneDiagnosisAdapter {
 
     final normalCount = summary['normal_count'] ?? 0;
     final problemCount = summary['problem_count'] ?? 0;
+    
+    // Processing time vem de summary.processing_time_s ou usa total_s de performance
+    final processingTimeS = ((summary['processing_time_s'] ?? performance['total_s'] ?? 0) as num).toStringAsFixed(2);
 
     final recommendationsRaw = summary['recommendations'] ?? [];
     final List<String> recommendations = [];
@@ -35,20 +38,20 @@ class SceneDiagnosisAdapter {
       recommendations: recommendations,
       normalCount: normalCount,
       problemCount: problemCount,
-      processingTime: '${((performance['total_s'] ?? 0) as num).toStringAsFixed(2)}s',
+      processingTime: '${processingTimeS}s',
 
-      environment: (metadata['environment'] ?? '-').toString(),
-      model: (metadata['model'] ?? '-').toString(),
-      device: (metadata['device'] ?? '-').toString(),
-      quantization: (metadata['quantization'] ?? '-').toString(),
+      environment: (metadata['environment'] ?? 'N/A').toString(),
+      model: (metadata['model'] ?? 'N/A').toString(),
+      device: (metadata['device'] ?? 'N/A').toString(),
+      quantization: (metadata['quantization'] ?? 'N/A').toString(),
       batchSize: metadata['batch_size'] ?? 0,
 
-      pdiTotalMs: (performance['pdi_total_ms'] ?? 0).toDouble(),
-      pdiPerImageMs: (performance['pdi_per_image_ms'] ?? 0).toDouble(),
-      slmTotalS: (performance['slm_total_s'] ?? 0).toDouble(),
-      slmPerDiagnosisS: (performance['slm_per_diagnosis_s'] ?? 0).toDouble(),
-      totalS: (performance['total_s'] ?? 0).toDouble(),
-      targetMet: performance['target_met'] ?? false,
+      pdiTotalMs: (performance['pdi_total_ms'] ?? 0.0).toDouble(),
+      pdiPerImageMs: (performance['pdi_per_image_ms'] ?? 0.0).toDouble(),
+      slmTotalS: (performance['slm_total_s'] ?? 0.0).toDouble(),
+      slmPerDiagnosisS: (performance['slm_per_diagnosis_s'] ?? 0.0).toDouble(),
+      totalS: (performance['total_s'] ?? 0.0).toDouble(),
+      targetMet: performance['target_met'] ?? isPass,
 
       totalFrames: statistics['total'] ?? 0,
       correctFrames: statistics['correct'] ?? 0,

@@ -7,7 +7,7 @@ import '../external/datasources/scene_upload_datasource.dart';
 import '../presenter/stores/scene_eval_store.dart';
 
 SceneEvalStore buildStore() {
-  const bool useFakeBackend = true;
+  const bool useFakeBackend = false;
   final dio = Dio();
 
   final sceneDatasource = useFakeBackend

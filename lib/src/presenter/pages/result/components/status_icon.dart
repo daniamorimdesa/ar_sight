@@ -9,23 +9,23 @@ class StatusIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 54,
-      height: 54,
+      width: 58,
+      height: 58,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.06),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
+        color: accent.withOpacity(0.10),
+        border: Border.all(color: accent.withOpacity(0.20)),
         boxShadow: [
           BoxShadow(
-            color: accent.withOpacity(0.25),
-            blurRadius: 28,
+            color: accent.withOpacity(0.14),
+            blurRadius: 22,
             spreadRadius: 1,
           ),
         ],
       ),
       child: Icon(
-        isPass ? Icons.check_rounded : Icons.priority_high_rounded,
-        color: Colors.white.withOpacity(0.92),
+        isPass ? Icons.task_alt_rounded : Icons.tips_and_updates_outlined,
+        color: accent,
         size: 28,
       ),
     );

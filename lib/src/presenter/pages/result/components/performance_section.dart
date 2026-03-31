@@ -27,6 +27,7 @@ class PerformanceSection extends StatelessWidget {
           value: '${diagnosis.pdiTotalMs.toStringAsFixed(1)} ms',
           icon: Icons.image_search_rounded,
           accent: accent,
+          iconColor: const Color.fromARGB(255, 183, 228, 198), // Sky Blue
           width: cardWidth,
         ),
         _statBox(
@@ -34,6 +35,7 @@ class PerformanceSection extends StatelessWidget {
           value: '${diagnosis.pdiPerImageMs.toStringAsFixed(1)} ms',
           icon: Icons.grid_view_rounded,
           accent: accent,
+          iconColor: const Color(0xFFA78BFA), // Purple
           width: cardWidth,
         ),
         _statBox(
@@ -41,6 +43,7 @@ class PerformanceSection extends StatelessWidget {
           value: '${diagnosis.slmTotalS.toStringAsFixed(2)} s',
           icon: Icons.psychology_alt_rounded,
           accent: accent,
+          iconColor: const Color(0xFF06B6D4), // Cyan
           width: cardWidth,
         ),
         _statBox(
@@ -48,6 +51,7 @@ class PerformanceSection extends StatelessWidget {
           value: '${diagnosis.slmPerDiagnosisS.toStringAsFixed(2)} s',
           icon: Icons.auto_awesome_rounded,
           accent: accent,
+          iconColor: const Color(0xFFF59E0B), // Amber
           width: cardWidth,
         ),
       ],
@@ -60,6 +64,7 @@ class PerformanceSection extends StatelessWidget {
     required IconData icon,
     required Color accent,
     required double width,
+    Color? iconColor,
   }) {
     return SizedBox(
       width: width,
@@ -68,6 +73,7 @@ class PerformanceSection extends StatelessWidget {
         value: value,
         icon: icon,
         accent: accent,
+        iconColor: iconColor,
       ),
     );
   }

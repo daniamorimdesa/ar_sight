@@ -28,7 +28,7 @@ class RecommendationsCard extends StatelessWidget {
                   ? 'No action needed. You can proceed.'
                   : 'No recommendations returned. Try scanning again.',
               style: GoogleFonts.poppins(
-                fontSize: 13,
+                fontSize: 15,
                 fontWeight: FontWeight.w300,
                 color: Colors.white.withOpacity(0.72),
               ),

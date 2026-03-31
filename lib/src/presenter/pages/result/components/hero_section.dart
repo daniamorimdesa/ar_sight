@@ -15,7 +15,7 @@ class HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isPass ? 'SCENE READY' : 'NEEDS IMPROVEMENTS';
+    final title = isPass ? 'SCENE READY' : 'SCENE NEEDS ADJUSTMENTS';
 
     return Column(
       children: [
@@ -24,7 +24,7 @@ class HeroSection extends StatelessWidget {
         Text(
           title,
           style: GoogleFonts.poppins(
-            fontSize: 22,
+            fontSize: 20,
             letterSpacing: 1.2,
             fontWeight: FontWeight.w700,
             color: Colors.white.withOpacity(0.95),

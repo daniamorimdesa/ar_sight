@@ -21,31 +21,30 @@ class RecommendationRowDark extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 24,
-            height: 24,
+            width: 36, // Circle diameter
+            height: 36, // Circle diameter
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.06),
-              border: Border.all(color: Colors.white.withOpacity(0.12)),
+              color: accent,
+             
             ),
             child: Text(
               '$index',
               style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Colors.white.withOpacity(0.88),
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: Colors.black,
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 14),
           Expanded(
             child: Text(
               text,
               style: GoogleFonts.poppins(
-                fontSize: 13,
+                fontSize: 15,
                 fontWeight: FontWeight.w300,
-                height: 1.35,
                 color: Colors.white.withOpacity(0.78),
               ),
             ),

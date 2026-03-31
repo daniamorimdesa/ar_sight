@@ -1,5 +1,6 @@
 // scene_datasource.dart: responsável por enviar os frames para o backend e receber as informações de cena avaliadas.
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 // Interface abstrata para o datasource de cena, definindo os métodos para iniciar o diagnóstico, obter o status do diagnóstico e obter o resultado do diagnóstico
@@ -17,8 +18,8 @@ class SceneDatasourceImpl implements SceneDatasource {
 
   SceneDatasourceImpl(this.dio);
   
-  // Substituir pelo IP do backend
-  static const String baseUrl = 'http://10.196.5.159:8000'; 
+  // Base URL carregado do arquivo .env
+  static String get baseUrl => dotenv.env['BASE_URL'] ?? 'http://localhost:8000';
 
   // Método para iniciar o diagnóstico, enviando uma requisição POST para o endpoint do backend responsável por iniciar o diagnóstico em lote
   @override

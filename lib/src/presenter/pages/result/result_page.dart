@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../models/scene_diagnosis.dart';
 import '../scene_eval/scene_eval_page.dart';
@@ -19,13 +18,13 @@ class ResultPage extends StatelessWidget {
   bool get _isPass => diagnosis.status.toLowerCase() == 'pass';
 
   Color get _accent =>
-      _isPass ? const Color(0xFF22C55E) : const Color(0xFFFF5B6A);
+      _isPass ? const Color(0xFF38BDF8) : const Color(0xFFF59E0B);
 
   String get _title => _isPass ? 'SCENE READY' : 'NEEDS IMPROVEMENTS';
 
   String get _subtitle => _isPass
-      ? 'Your environment is suitable for AR experiences'
-      : 'Your environment needs adjustments before AR use';
+      ? 'This scene meets the conditions for AR experiences'
+      : 'This scene needs a few adjustments before AR use';
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +54,8 @@ class ResultPage extends StatelessWidget {
           ),
           IconButton(
             tooltip: 'Home',
-            onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
             icon: Icon(
               Icons.home_rounded,
               color: Colors.white.withOpacity(0.9),
@@ -66,36 +66,78 @@ class ResultPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
+          // Base gradient with purple and cyan tones
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: const Alignment(0.0, -0.9),
-                  radius: 1.2,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                   colors: [
-                    _accent.withOpacity(0.16),
-                    const Color(0xFF05070B),
+                    const Color(0xFF1a1a2e),
+                    const Color(0xFF16213e).withOpacity(0.8),
                     Colors.black,
                   ],
                 ),
               ),
             ),
           ),
+          // Radial gradient overlay for accent color
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.28)),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0.3, -0.8),
+                  radius: 1.5,
+                  colors: [
+                    const Color(0xFF00d4ff).withOpacity(0.08),
+                    const Color(0xFF7c3aed).withOpacity(0.06),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Secondary accent spot
+          Positioned(
+            right: -100,
+            top: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF7c3aed).withOpacity(0.04),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Dark overlay for better text readability
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.35)),
           ),
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(18, 18, 18, 120),
               children: [
                 HeroSection(isPass: _isPass, accent: _accent),
-                const SizedBox(height: 18),
+
+                const SizedBox(height: 10),
+
                 Divider(color: Colors.white.withOpacity(0.10)),
-                const SizedBox(height: 18),
+
+                const SizedBox(height: 10),
+
                 SectionTitle(title: 'SCENE SUMMARY'),
                 const SizedBox(height: 10),
                 SummaryCard(diagnosis: diagnosis, accent: _accent),
+
                 const SizedBox(height: 18),
+
                 SectionTitle(title: 'FRAME OVERVIEW'),
                 const SizedBox(height: 10),
                 FrameOverviewCard(
@@ -103,7 +145,9 @@ class ResultPage extends StatelessWidget {
                   problemCount: diagnosis.problemCount,
                   accent: _accent,
                 ),
+
                 const SizedBox(height: 18),
+
                 SectionTitle(title: 'RECOMMENDATIONS'),
                 const SizedBox(height: 10),
                 RecommendationsCard(
@@ -111,14 +155,26 @@ class ResultPage extends StatelessWidget {
                   isPass: _isPass,
                   accent: _accent,
                 ),
+
                 const SizedBox(height: 18),
-                SectionTitle(title: 'RUNTIME SETUP'),
-                const SizedBox(height: 10),
-                RuntimeSetupCard(diagnosis: diagnosis, accent: _accent),
-                const SizedBox(height: 18),
+
                 SectionTitle(title: 'PERFORMANCE'),
                 const SizedBox(height: 10),
                 PerformanceSection(diagnosis: diagnosis, accent: _accent),
+
+                const SizedBox(height: 18),
+
+                SectionTitle(title: 'RUNTIME SETUP'),
+                const SizedBox(height: 10),
+                RuntimeSetupCard(
+                  diagnosis: diagnosis,
+                  accent: const Color.fromARGB(
+                    255,
+                    144,
+                    129,
+                    231,
+                  ).withOpacity(0.92),
+                ),
               ],
             ),
           ),
