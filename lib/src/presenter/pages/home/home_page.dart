@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
+import '../../../models/frame_data.dart';
 import 'components/dialog_box.dart';
 import 'components/elevated_button_3d.dart';
 import 'components/home_bottom_bar.dart';
@@ -188,10 +189,19 @@ Positioned(
         },
         onLastFramesTap: () {
           if (store.lastCapturedFrames.isNotEmpty) {
+            // Convert diagnosis frames to FrameData if available
+            final frameDataList = store.lastResult?.frames
+                .asMap()
+                .entries
+                .map((e) => FrameData.fromBackend(e.value, e.key))
+                .toList()
+                .cast<FrameData>();
+
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => FramesPreviewPage(
                   frames: store.lastCapturedFrames,
+                  frameDataList: frameDataList,
                 ),
               ),
             );

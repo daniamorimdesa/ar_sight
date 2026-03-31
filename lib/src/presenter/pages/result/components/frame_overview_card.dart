@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../models/frame_data.dart';
+import '../../../../models/scene_diagnosis.dart';
 import '../../../stores/scene_eval_store.dart';
 import '../../frames_preview/frames_preview_page.dart';
 import 'glass_card_dark.dart';
@@ -9,12 +11,14 @@ class FrameOverviewCard extends StatelessWidget {
   final int normalCount;
   final int problemCount;
   final Color accent;
+  final SceneDiagnosis? diagnosis;
 
   const FrameOverviewCard({
     super.key,
     required this.normalCount,
     required this.problemCount,
     required this.accent,
+    this.diagnosis,
   });
 
   @override
@@ -74,10 +78,19 @@ class FrameOverviewCard extends StatelessWidget {
                   final store = context.read<SceneEvalStore>();
 
                   if (store.lastCapturedFrames.isNotEmpty) {
+                    // Convert diagnosis frames to FrameData
+                    final frameDataList = diagnosis?.frames
+                        .asMap()
+                        .entries
+                        .map((e) => FrameData.fromBackend(e.value, e.key))
+                        .toList();
+
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) =>
-                            FramesPreviewPage(frames: store.lastCapturedFrames),
+                        builder: (_) => FramesPreviewPage(
+                          frames: store.lastCapturedFrames,
+                          frameDataList: frameDataList,
+                        ),
                       ),
                     );
                   } else {

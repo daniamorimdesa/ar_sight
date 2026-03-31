@@ -144,6 +144,7 @@ class ResultPage extends StatelessWidget {
                   normalCount: diagnosis.normalCount,
                   problemCount: diagnosis.problemCount,
                   accent: _accent,
+                  diagnosis: diagnosis,
                 ),
 
                 const SizedBox(height: 18),
