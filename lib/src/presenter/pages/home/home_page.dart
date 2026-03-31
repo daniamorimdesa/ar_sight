@@ -1,3 +1,5 @@
+// home_page.dart: página inicial do aplicativo, apresentando um vídeo de fundo, o logo, uma breve descrição e um botão para iniciar a avaliação da cena. 
+// Também inclui uma barra inferior para acessar instruções, últimas frames capturadas e último diagnóstico.
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';

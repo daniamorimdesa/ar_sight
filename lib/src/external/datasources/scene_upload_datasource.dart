@@ -1,29 +1,29 @@
-// scene_upload_datasource.dart: responsável por enviar os frames para o backend e receber as informações de upload (ex: session_id) para cada frame
+// scene_upload_datasource.dart: responsável por enviar os frames para o backend e receber as informações de upload
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Interface abstrata para o datasource de upload de cena, definindo o método para enviar os frames para o backend e receber as informações de upload
 abstract class SceneUploadDatasource {
-  // Recebe uma lista de frames (imagens) e retorna um mapa contendo as informações de upload para cada frame, como o session_id gerado no backend
-  Future<Map<String, dynamic>> uploadFrames(
-    List<Uint8List> frames, {
-    String? sessionId,
-  });
+  Future<Map<String, dynamic>> uploadFrames(List<Uint8List> frames);
 }
 
-// Implementação concreta do SceneUploadDatasource usando a biblioteca Dio para fazer requisições HTTP
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Implementação concreta do SceneUploadDatasource usando a biblioteca Dio para fazer requisições HTTP para o backend
 class SceneUploadDatasourceImpl implements SceneUploadDatasource {
   // Instância do Dio para realizar as requisições HTTP
   final Dio dio;
 
   SceneUploadDatasourceImpl(this.dio);
 
-  // Método que envia os frames para o backend e recebe as informações de upload para cada frame
+  // Substituir pelo IP do backend
+  static const String baseUrl = 'http://10.196.5.159:8000';
+
+  // Método para enviar os frames para o backend e receber as informações de upload para cada frame, como o batch_id gerado no backend
   @override
-  Future<Map<String, dynamic>> uploadFrames(
-    List<Uint8List> frames, {
-    String? sessionId,
-  }) async {
+  Future<Map<String, dynamic>> uploadFrames(List<Uint8List> frames) async {
     // Verifica se a lista de frames está vazia e lança uma exceção se for o caso, para evitar enviar uma requisição sem arquivos
     if (frames.isEmpty) {
       throw Exception('Nenhum frame fornecido para upload');
@@ -42,42 +42,27 @@ class SceneUploadDatasourceImpl implements SceneUploadDatasource {
       );
     }
 
-    // criar subpasta no backend
-    if (sessionId != null) {
-      formData.fields.add(MapEntry('session_id', sessionId));
-    }
-
     // Envia uma requisição POST para o endpoint do backend responsável por fazer o upload dos frames, passando o FormData como corpo da requisição
-    try {
-      final response = await dio.post(
-        // confirme que está usando seu IP real
-        // 'http://192.168.15.4:8000/upload/batch', //
-        // 'http://192.168.158.44:8000/upload/batch', // ip do lab no Softex_Conv
-        'http://10.196.5.159:8000/upload/batch', // ip internet meu celular
-        data: formData,
-        options: Options(
-          sendTimeout: const Duration(seconds: 60),
-          receiveTimeout: const Duration(seconds: 60),
-        ),
-      );
+    final response = await dio.post(
+      '$baseUrl/upload/batch',
+      data: formData,
+      options: Options(
+        sendTimeout: const Duration(seconds: 120),
+        receiveTimeout: const Duration(seconds: 120),
+      ),
+    );
 
-      return Map<String, dynamic>.from(response.data as Map);
-    } on DioException catch (e) {
-      // mostrar o erro real
-      debugPrint('UPLOAD DioException.type = ${e.type}');
-      debugPrint('UPLOAD DioException.message = ${e.message}');
-      debugPrint('UPLOAD statusCode = ${e.response?.statusCode}');
-      debugPrint('UPLOAD response.data = ${e.response?.data}');
+    // Retorna a resposta do backend como um mapa contendo as informações de upload para cada frame, como o batch_id gerado no backend
+    final data = Map<String, dynamic>.from(response.data as Map);
 
-      // devolver algo útil pra store/UI
-      final detail = (e.response?.data is Map)
-          ? (e.response?.data['detail']?.toString())
-          : null;
-
-      throw Exception(detail ?? e.message ?? 'Falha no upload (DioException)');
-    } catch (e) {
-      debugPrint('UPLOAD unknown error = $e');
-      throw Exception('Falha no upload (erro desconhecido): $e');
+    // Verifica se a resposta contém o campo "batch_id" e lança uma exceção se não for encontrado
+    if (!data.containsKey('batch_id')) {
+      throw Exception('Resposta inválida: batch_id não encontrado');
     }
+
+    // Imprime a resposta do upload no console para fins de depuração
+    debugPrint('UPLOAD response: $data');
+
+    return data;
   }
 }

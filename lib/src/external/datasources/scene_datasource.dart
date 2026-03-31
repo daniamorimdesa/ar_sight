@@ -1,43 +1,43 @@
 // scene_datasource.dart: responsável por enviar os frames para o backend e receber as informações de cena avaliadas.
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
 
+
+// Interface abstrata para o datasource de cena, definindo os métodos para iniciar o diagnóstico, obter o status do diagnóstico e obter o resultado do diagnóstico
 abstract class SceneDatasource {
-  // Recebe uma lista de frames (imagens) e retorna uma lista de mapas contendo as informações de cena avaliadas para cada frame
-  Future<List<Map<String, dynamic>>> evaluateScene(List<Uint8List> frames);
+  Future<Map<String, dynamic>> startDiagnosis(String batchId);
+  Future<Map<String, dynamic>> getDiagnosisStatus(String batchId);
+  Future<Map<String, dynamic>> getDiagnosisResult(String batchId);
 }
 
-// Implementação concreta do SceneDatasource usando a biblioteca Dio para fazer requisições HTTP
+// Implementação concreta do SceneDatasource usando a biblioteca Dio para fazer requisições HTTP para o backend
 class SceneDatasourceImpl implements SceneDatasource {
-  final Dio dio; // Instância do Dio para realizar as requisições HTTP
+
+  // Instância do Dio para realizar as requisições HTTP
+  final Dio dio;
 
   SceneDatasourceImpl(this.dio);
+  
+  // Substituir pelo IP do backend
+  static const String baseUrl = 'http://10.196.5.159:8000'; 
 
-  // Método que envia os frames para o backend e recebe as informações de cena avaliadas
+  // Método para iniciar o diagnóstico, enviando uma requisição POST para o endpoint do backend responsável por iniciar o diagnóstico em lote
   @override
-  Future<List<Map<String, dynamic>>> evaluateScene(
-    List<Uint8List> frames,
-  ) async {
-    // Cria um FormData para enviar os arquivos como multipart/form-data
-    final formData = FormData();
+  Future<Map<String, dynamic>> startDiagnosis(String batchId) async {
+    final response = await dio.post('$baseUrl/diagnose/batch/$batchId');
+    return Map<String, dynamic>.from(response.data as Map);
+  }
 
-    // Adiciona cada frame como um arquivo no FormData, nomeando-os como "frame_0.jpg", "frame_1.jpg", etc
-    for (int i = 0; i < frames.length; i++) {
-      formData.files.add(
-        MapEntry(
-          'frames',
-          MultipartFile.fromBytes(frames[i], filename: 'frame_$i.jpg'),
-        ),
-      );
-    }
+  // Método para obter o status do diagnóstico, enviando uma requisição GET para o endpoint do backend responsável por retornar o status do diagnóstico em lote
+  @override
+  Future<Map<String, dynamic>> getDiagnosisStatus(String batchId) async {
+    final response = await dio.get('$baseUrl/diagnose/batch/$batchId/status');
+    return Map<String, dynamic>.from(response.data as Map);
+  }
 
-    // Envia uma requisição POST para o endpoint do backend responsável por avaliar a cena, passando o FormData como corpo da requisição
-    final response = await dio.post(
-      'http://<IP-DO-BACKEND>:8000/scene/evaluate',
-      data: formData,
-    );
-
-    // Retorna os dados da resposta, que devem conter as informações de cena avaliadas para cada frame
-    return response.data;
+  // Método para obter o resultado do diagnóstico, enviando uma requisição GET para o endpoint do backend responsável por retornar o resultado do diagnóstico em lote
+  @override
+  Future<Map<String, dynamic>> getDiagnosisResult(String batchId) async {
+    final response = await dio.get('$baseUrl/diagnose/batch/$batchId/result');
+    return Map<String, dynamic>.from(response.data as Map);
   }
 }

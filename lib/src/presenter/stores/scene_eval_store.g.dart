@@ -27,6 +27,42 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
     });
   }
 
+  late final _$isUploadingAtom = Atom(
+    name: '_SceneEvalStore.isUploading',
+    context: context,
+  );
+
+  @override
+  bool get isUploading {
+    _$isUploadingAtom.reportRead();
+    return super.isUploading;
+  }
+
+  @override
+  set isUploading(bool value) {
+    _$isUploadingAtom.reportWrite(value, super.isUploading, () {
+      super.isUploading = value;
+    });
+  }
+
+  late final _$isDiagnosingAtom = Atom(
+    name: '_SceneEvalStore.isDiagnosing',
+    context: context,
+  );
+
+  @override
+  bool get isDiagnosing {
+    _$isDiagnosingAtom.reportRead();
+    return super.isDiagnosing;
+  }
+
+  @override
+  set isDiagnosing(bool value) {
+    _$isDiagnosingAtom.reportWrite(value, super.isDiagnosing, () {
+      super.isDiagnosing = value;
+    });
+  }
+
   late final _$capturedFramesAtom = Atom(
     name: '_SceneEvalStore.capturedFrames',
     context: context,
@@ -117,21 +153,21 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
     });
   }
 
-  late final _$isUploadingAtom = Atom(
-    name: '_SceneEvalStore.isUploading',
+  late final _$lastUploadResponseAtom = Atom(
+    name: '_SceneEvalStore.lastUploadResponse',
     context: context,
   );
 
   @override
-  bool get isUploading {
-    _$isUploadingAtom.reportRead();
-    return super.isUploading;
+  Map<String, dynamic>? get lastUploadResponse {
+    _$lastUploadResponseAtom.reportRead();
+    return super.lastUploadResponse;
   }
 
   @override
-  set isUploading(bool value) {
-    _$isUploadingAtom.reportWrite(value, super.isUploading, () {
-      super.isUploading = value;
+  set lastUploadResponse(Map<String, dynamic>? value) {
+    _$lastUploadResponseAtom.reportWrite(value, super.lastUploadResponse, () {
+      super.lastUploadResponse = value;
     });
   }
 
@@ -153,21 +189,57 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
     });
   }
 
-  late final _$lastUploadResponseAtom = Atom(
-    name: '_SceneEvalStore.lastUploadResponse',
+  late final _$diagnosisErrorAtom = Atom(
+    name: '_SceneEvalStore.diagnosisError',
     context: context,
   );
 
   @override
-  Map<String, dynamic>? get lastUploadResponse {
-    _$lastUploadResponseAtom.reportRead();
-    return super.lastUploadResponse;
+  String? get diagnosisError {
+    _$diagnosisErrorAtom.reportRead();
+    return super.diagnosisError;
   }
 
   @override
-  set lastUploadResponse(Map<String, dynamic>? value) {
-    _$lastUploadResponseAtom.reportWrite(value, super.lastUploadResponse, () {
-      super.lastUploadResponse = value;
+  set diagnosisError(String? value) {
+    _$diagnosisErrorAtom.reportWrite(value, super.diagnosisError, () {
+      super.diagnosisError = value;
+    });
+  }
+
+  late final _$batchIdAtom = Atom(
+    name: '_SceneEvalStore.batchId',
+    context: context,
+  );
+
+  @override
+  String? get batchId {
+    _$batchIdAtom.reportRead();
+    return super.batchId;
+  }
+
+  @override
+  set batchId(String? value) {
+    _$batchIdAtom.reportWrite(value, super.batchId, () {
+      super.batchId = value;
+    });
+  }
+
+  late final _$diagnosisStatusAtom = Atom(
+    name: '_SceneEvalStore.diagnosisStatus',
+    context: context,
+  );
+
+  @override
+  String get diagnosisStatus {
+    _$diagnosisStatusAtom.reportRead();
+    return super.diagnosisStatus;
+  }
+
+  @override
+  set diagnosisStatus(String value) {
+    _$diagnosisStatusAtom.reportWrite(value, super.diagnosisStatus, () {
+      super.diagnosisStatus = value;
     });
   }
 
@@ -181,15 +253,15 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
     return _$startCaptureAsyncAction.run(() => super.startCapture(controller));
   }
 
-  late final _$uploadLastFramesAsyncAction = AsyncAction(
-    '_SceneEvalStore.uploadLastFrames',
+  late final _$_uploadAndDiagnoseAsyncAction = AsyncAction(
+    '_SceneEvalStore._uploadAndDiagnose',
     context: context,
   );
 
   @override
-  Future<void> uploadLastFrames({String? sessionId}) {
-    return _$uploadLastFramesAsyncAction.run(
-      () => super.uploadLastFrames(sessionId: sessionId),
+  Future<void> _uploadAndDiagnose(List<Uint8List> frames) {
+    return _$_uploadAndDiagnoseAsyncAction.run(
+      () => super._uploadAndDiagnose(frames),
     );
   }
 
@@ -197,14 +269,18 @@ mixin _$SceneEvalStore on _SceneEvalStore, Store {
   String toString() {
     return '''
 isCapturing: ${isCapturing},
+isUploading: ${isUploading},
+isDiagnosing: ${isDiagnosing},
 capturedFrames: ${capturedFrames},
 progress: ${progress},
 secondsRemaining: ${secondsRemaining},
 lastCapturedFrames: ${lastCapturedFrames},
 lastResult: ${lastResult},
-isUploading: ${isUploading},
+lastUploadResponse: ${lastUploadResponse},
 uploadError: ${uploadError},
-lastUploadResponse: ${lastUploadResponse}
+diagnosisError: ${diagnosisError},
+batchId: ${batchId},
+diagnosisStatus: ${diagnosisStatus}
     ''';
   }
 }

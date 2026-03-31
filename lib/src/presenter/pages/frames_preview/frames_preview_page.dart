@@ -1,3 +1,5 @@
+// frames_preview_page.dart: página para exibir as últimas frames capturadas, 
+// mostrando a qualidade de cada frame e permitindo que o usuário visualize detalhes adicionais ao clicar em cada frame
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
