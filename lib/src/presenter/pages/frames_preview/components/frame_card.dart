@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../models/frame_data.dart';
 import 'frame_card_image.dart';
-import 'frame_details_modal.dart';
 import 'frame_status_badge.dart';
+import 'frame_viewer_page.dart';
 
 class FrameCard extends StatelessWidget {
   final Uint8List frame;
@@ -24,9 +24,15 @@ class FrameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (frameData != null) {
-          _showFrameDetails(context);
-        }
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => FrameViewerPage(
+              frame: frame,
+              index: index,
+              frameData: frameData,
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -53,16 +59,6 @@ class FrameCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _showFrameDetails(BuildContext context) {
-    if (frameData == null) return;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => FrameDetailsModal(frameData: frameData!),
     );
   }
 }
