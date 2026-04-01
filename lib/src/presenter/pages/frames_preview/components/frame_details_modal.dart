@@ -61,7 +61,7 @@ class FrameDetailsModal extends StatelessWidget {
 
   Widget _buildModalHeader(Color statusColor) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -70,33 +70,45 @@ class FrameDetailsModal extends StatelessWidget {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Frame Details',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
+          Image.asset(
+            'assets/icon/icon3_rm_bg.png',
+            height: 72,
+            width: 72,
+          ),
+          const SizedBox(width: 8),
+          Padding(
+            padding: const EdgeInsets.only(top: 32),
+            child: Text(
+              'Frame Details',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              color: statusColor,
-              border: Border.all(color: Colors.white, width: 1.5),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          Padding(
+            padding: const EdgeInsets.only(top: 32),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: statusColor,
+                border: Border.all(color: Colors.white, width: 1.5),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
             child: Text(
               frameData.isPass ? 'PASS' : 'FAIL',
               style: GoogleFonts.poppins(
@@ -105,8 +117,7 @@ class FrameDetailsModal extends StatelessWidget {
                 color: Colors.white,
                 letterSpacing: 0.8,
               ),
-            ),
-          ),
+            ),            ),          ),
         ],
       ),
     );

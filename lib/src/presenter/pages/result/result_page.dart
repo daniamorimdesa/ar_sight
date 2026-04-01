@@ -153,6 +153,7 @@ class ResultPage extends StatelessWidget {
                 const SizedBox(height: 10),
                 RecommendationsCard(
                   recommendations: diagnosis.recommendations,
+                  recommendationGroups: diagnosis.recommendationGroups,
                   isPass: _isPass,
                   accent: _accent,
                 ),

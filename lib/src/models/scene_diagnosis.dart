@@ -1,11 +1,14 @@
 // scene_diagnosis.dart: modelo de dados para representar o diagnóstico de uma cena, incluindo status, nível de risco, razões, explicações, métricas de evidência, recomendações e informações da cena
 
+import 'recommendation_group.dart';
+
 class SceneDiagnosis {
   final String status;
   final String riskLevel;
   final String dominantLabel;
   final String explanation;
   final List<String> recommendations;
+  final List<RecommendationGroup> recommendationGroups;
 
   final int normalCount;
   final int problemCount;
@@ -38,6 +41,7 @@ class SceneDiagnosis {
     required this.dominantLabel,
     required this.explanation,
     required this.recommendations,
+    required this.recommendationGroups,
     required this.normalCount,
     required this.problemCount,
     required this.processingTime,
