@@ -27,7 +27,7 @@ class ProcessingState extends StatelessWidget {
   String get message {
     switch (status) {
       case 'uploaded':
-        return 'Images received';
+        return 'Upload complete';
       case 'processing':
         return 'Analyzing your scene...';
       case 'completed':
