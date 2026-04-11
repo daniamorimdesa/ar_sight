@@ -3,7 +3,8 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../config/backend_session.dart';
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Interface abstrata para o datasource de upload de cena, definindo o método para enviar os frames para o backend e receber as informações de upload
@@ -16,11 +17,9 @@ abstract class SceneUploadDatasource {
 class SceneUploadDatasourceImpl implements SceneUploadDatasource {
   // Instância do Dio para realizar as requisições HTTP
   final Dio dio;
+  final BackendSession backendSession;
 
-  SceneUploadDatasourceImpl(this.dio);
-
-  // Base URL carregado do arquivo .env
-  static String get baseUrl => dotenv.env['BASE_URL'] ?? 'http://localhost:8000';
+  SceneUploadDatasourceImpl(this.dio, this.backendSession);
 
   // Método para enviar os frames para o backend e receber as informações de upload para cada frame, como o batch_id gerado no backend
   @override
@@ -45,7 +44,7 @@ class SceneUploadDatasourceImpl implements SceneUploadDatasource {
 
     // Envia uma requisição POST para o endpoint do backend responsável por fazer o upload dos frames, passando o FormData como corpo da requisição
     final response = await dio.post(
-      '$baseUrl/upload/batch',
+      '${backendSession.baseUrl}/upload/batch',
       data: formData,
       options: Options(
         sendTimeout: const Duration(seconds: 120),

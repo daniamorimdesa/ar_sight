@@ -9,10 +9,11 @@ import 'src/setup/store_factory.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
-  
+  final store = await buildStore();
+
   runApp(
     Provider<SceneEvalStore>(
-      create: (_) => buildStore(),
+      create: (_) => store,
       dispose: (_, store) => store.dispose(),
       child: const MainApp(),
     ),

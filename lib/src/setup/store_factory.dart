@@ -1,22 +1,29 @@
 import 'package:dio/dio.dart';
 
+import '../external/config/backend_resolver.dart';
+import '../external/config/backend_session.dart';
 import '../external/datasources/fake_scene_datasource.dart';
 import '../external/datasources/fake_scene_upload_datasource.dart';
 import '../external/datasources/scene_datasource.dart';
 import '../external/datasources/scene_upload_datasource.dart';
 import '../presenter/stores/scene_eval_store.dart';
 
-SceneEvalStore buildStore() {
+Future<SceneEvalStore> buildStore() async {
   const bool useFakeBackend = false;
+
+  if (useFakeBackend) {
+    return SceneEvalStore(FakeSceneDatasource(), FakeSceneUploadDatasource());
+  }
+
+  final backendSession = BackendSession();
+  final resolver = BackendResolver(Dio());
+  backendSession.active = await resolver.resolve();
+
   final dio = Dio();
 
-  final sceneDatasource = useFakeBackend
-      ? FakeSceneDatasource()
-      : SceneDatasourceImpl(dio);
+  final sceneDatasource = SceneDatasourceImpl(dio, backendSession);
 
-  final sceneUploadDatasource = useFakeBackend
-      ? FakeSceneUploadDatasource()
-      : SceneUploadDatasourceImpl(dio);
+  final sceneUploadDatasource = SceneUploadDatasourceImpl(dio, backendSession);
 
   return SceneEvalStore(sceneDatasource, sceneUploadDatasource);
 }
