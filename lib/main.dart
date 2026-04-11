@@ -8,7 +8,15 @@ import 'src/presenter/stores/scene_eval_store.dart';
 import 'src/setup/store_factory.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    // Keep app startup resilient even when .env is missing or unreadable.
+    debugPrint('Could not load .env: ');
+  }
+
   final store = await buildStore();
 
   runApp(

@@ -32,10 +32,12 @@ class _ElevatedButton3DState extends State<ElevatedButton3D> {
       duration: const Duration(milliseconds: 800),
       curve: Curves.elasticOut,
       builder: (context, value, child) {
+        final safeOpacity = value.clamp(0.0, 1.0).toDouble();
+
         return Transform.scale(
           scale: 0.5 + (0.5 * value),
           child: Opacity(
-            opacity: value,
+            opacity: safeOpacity,
             child: child,
           ),
         );

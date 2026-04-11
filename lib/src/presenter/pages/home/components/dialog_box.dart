@@ -62,10 +62,12 @@ class DialogBox extends StatelessWidget {
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeOutBack,
       builder: (context, value, child) {
+        final safeOpacity = value.clamp(0.0, 1.0).toDouble();
+
         return Transform.scale(
           scale: 0.8 + (0.2 * value),
           child: Opacity(
-            opacity: value,
+            opacity: safeOpacity,
             child: Transform.translate(
               offset: Offset(0, 20 * (1 - value)),
               child: child,
