@@ -11,13 +11,13 @@ import '../presenter/stores/scene_eval_store.dart';
 Future<SceneEvalStore> buildStore() async {
   const bool useFakeBackend = false;
 
-  if (useFakeBackend) {
-    return SceneEvalStore(FakeSceneDatasource(), FakeSceneUploadDatasource());
-  }
-
   final backendSession = BackendSession();
   final resolver = BackendResolver(Dio());
   backendSession.active = await resolver.resolve();
+
+  if (useFakeBackend) {
+    return SceneEvalStore(FakeSceneDatasource(), FakeSceneUploadDatasource(), backendSession);
+  }
 
   final dio = Dio();
 
@@ -25,5 +25,5 @@ Future<SceneEvalStore> buildStore() async {
 
   final sceneUploadDatasource = SceneUploadDatasourceImpl(dio, backendSession);
 
-  return SceneEvalStore(sceneDatasource, sceneUploadDatasource);
+  return SceneEvalStore(sceneDatasource, sceneUploadDatasource, backendSession);
 }

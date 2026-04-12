@@ -23,6 +23,10 @@ class SceneDatasourceImpl implements SceneDatasource {
   Future<Map<String, dynamic>> startDiagnosis(String batchId) async {
     final response = await dio.post(
       '${backendSession.baseUrl}/diagnose/batch/$batchId',
+      options: Options(
+        sendTimeout: backendSession.diagnosisTimeout,
+        receiveTimeout: backendSession.diagnosisTimeout,
+      ),
     );
     return Map<String, dynamic>.from(response.data as Map);
   }
@@ -32,6 +36,10 @@ class SceneDatasourceImpl implements SceneDatasource {
   Future<Map<String, dynamic>> getDiagnosisStatus(String batchId) async {
     final response = await dio.get(
       '${backendSession.baseUrl}/diagnose/batch/$batchId/status',
+      options: Options(
+        sendTimeout: backendSession.diagnosisTimeout,
+        receiveTimeout: backendSession.diagnosisTimeout,
+      ),
     );
     return Map<String, dynamic>.from(response.data as Map);
   }
@@ -41,6 +49,10 @@ class SceneDatasourceImpl implements SceneDatasource {
   Future<Map<String, dynamic>> getDiagnosisResult(String batchId) async {
     final response = await dio.get(
       '${backendSession.baseUrl}/diagnose/batch/$batchId/result',
+      options: Options(
+        sendTimeout: backendSession.diagnosisTimeout,
+        receiveTimeout: backendSession.diagnosisTimeout,
+      ),
     );
     return Map<String, dynamic>.from(response.data as Map);
   }

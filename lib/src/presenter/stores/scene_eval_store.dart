@@ -8,6 +8,7 @@ import 'package:camera/camera.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../external/adapters/scene_diagnosis_adapter.dart';
+import '../../external/config/backend_session.dart';
 import '../../external/datasources/scene_datasource.dart';
 import '../../external/datasources/scene_upload_datasource.dart';
 import '../../external/services/camera_service.dart';
@@ -22,8 +23,9 @@ abstract class _SceneEvalStore with Store {
   // Instâncias dos datasources para avaliação da cena e upload dos frames, injetados via construtor para facilitar testes e flexibilidade
   final SceneDatasource datasource;
   final SceneUploadDatasource uploadDatasource;
+  final BackendSession backendSession;
 
-  _SceneEvalStore(this.datasource, this.uploadDatasource);
+  _SceneEvalStore(this.datasource, this.uploadDatasource, this.backendSession);
 
   // Timer para contagem regressiva e atualização de progresso durante a captura
   Timer? _timer; 
@@ -214,15 +216,19 @@ abstract class _SceneEvalStore with Store {
     isDiagnosing = true;
 
     try {
-      await datasource.startDiagnosis(batchId!); // Inicia o diagnóstico no backend usando o batch_id retornado pelo upload
+      // Pequeno delay para permitir visualizar a transição de "upload complete" para "processing"
+      await Future.delayed(const Duration(milliseconds: 1500));
 
+      // Atualiza imediatamente para 'processing' quando diagnóstico começa
       runInAction(() {
-        diagnosisStatus = 'processing'; // Atualiza o status do diagnóstico para "processing" após iniciar o diagnóstico no backend
+        diagnosisStatus = 'processing'; // Atualiza o status do diagnóstico para "processing" imediatamente após iniciar o diagnóstico no backend
       });
 
-      // 3. polling - verifica o status do diagnóstico a cada segundo até que seja "completed" ou "failed", lançando uma exceção em caso de falha
+      await datasource.startDiagnosis(batchId!); // Inicia o diagnóstico no backend usando o batch_id retornado pelo upload
+
+      // 3. polling - verifica o status do diagnóstico em intervalos personalizados até que seja "completed" ou "failed", lançando uma exceção em caso de falha
       while (true) {
-        await Future.delayed(const Duration(seconds: 1)); // Aguarda 1 segundo antes de verificar o status novamente para evitar sobrecarregar o backend com requisições muito frequentes
+        await Future.delayed(Duration(seconds: backendSession.pollingIntervalSeconds)); // Aguarda intervalo personalizado por backend antes de verificar o status novamente
 
         final statusResponse = await datasource.getDiagnosisStatus(batchId!); // Verifica o status do diagnóstico no backend usando o batch_id para acompanhar o progresso do diagnóstico
         final status = statusResponse['status']?.toString() ?? 'unknown';     // Extrai o status do diagnóstico da resposta do backend, usando "unknown" como valor padrão caso o campo "status" esteja ausente
@@ -252,6 +258,9 @@ abstract class _SceneEvalStore with Store {
         lastResult = SceneDiagnosisAdapter.fromBackend(resultResponse); // Converte a resposta do backend para o modelo SceneDiagnosis usando o adapter e armazena como o resultado da última avaliação
         diagnosisStatus = 'completed';                                  // Atualiza o status do diagnóstico para "completed" após receber o resultado final do backend
       });
+
+      // Pequeno delay para permitir visualizar a mensagem "Diagnosis ready" antes de navegar
+      await Future.delayed(const Duration(milliseconds: 1000));
     } catch (e) {
       runInAction(() {
         diagnosisError = e.toString();

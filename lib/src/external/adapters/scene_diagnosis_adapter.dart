@@ -1,9 +1,20 @@
 // scene_diagnosis_adapter.dart: adaptador para converter a resposta bruta do backend em um objeto SceneDiagnosis estruturado
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+
 import '../../models/recommendation_group.dart';
 import '../../models/scene_diagnosis.dart';
 
 class SceneDiagnosisAdapter {
   static SceneDiagnosis fromBackend(Map<String, dynamic> map) {
+    // DEBUG: Exibir JSON completo da resposta do backend
+    if (kDebugMode) {
+      debugPrint('=== BACKEND RESPONSE JSON ===');
+      debugPrint(JsonEncoder.withIndent('  ').convert(map));
+      debugPrint('============================');
+      debugPrint('Metadata received: ${map['metadata']}');
+    }
+
     final metadata = Map<String, dynamic>.from(map['metadata'] ?? {});
     final performance = Map<String, dynamic>.from(map['performance'] ?? {});
     final statistics = Map<String, dynamic>.from(map['statistics'] ?? {});
@@ -49,10 +60,10 @@ class SceneDiagnosisAdapter {
       problemCount: problemCount,
       processingTime: '${processingTimeS}s',
 
-      environment: (metadata['environment'] ?? 'N/A').toString(),
-      model: (metadata['model'] ?? 'N/A').toString(),
-      device: (metadata['device'] ?? 'N/A').toString(),
-      quantization: (metadata['quantization'] ?? 'N/A').toString(),
+      environment: (metadata['environment'] ?? 'Backend Processing').toString(),
+      model: (metadata['model'] ?? 'Unknown Model').toString(),
+      device: (metadata['device'] ?? 'Unknown Device').toString(),
+      quantization: (metadata['quantization'] ?? 'Not Specified').toString(),
       batchSize: metadata['batch_size'] ?? 0,
 
       pdiTotalMs: (performance['pdi_total_ms'] ?? 0.0).toDouble(),

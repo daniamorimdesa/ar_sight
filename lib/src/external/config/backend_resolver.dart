@@ -15,8 +15,8 @@ class BackendResolver {
         final response = await dio.get(
           '${candidate.baseUrl}/health',
           options: Options(
-            sendTimeout: const Duration(seconds: 2),
-            receiveTimeout: const Duration(seconds: 2),
+            sendTimeout: candidate.healthCheckTimeout,
+            receiveTimeout: candidate.healthCheckTimeout,
           ),
         );
 
