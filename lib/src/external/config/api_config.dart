@@ -25,7 +25,7 @@ class ApiConfig {
     BackendCandidate(
       name: 'Legion',
       // baseUrl: 'http://pc062.local:8000',
-      baseUrl: 'http://10.217.121.159:8000',
+      baseUrl: 'http://192.168.155.163:8000',
       healthCheckTimeout: Duration(seconds: 5),
       diagnosisTimeout: Duration(seconds: 30),
       pollingIntervalSeconds: 1,
