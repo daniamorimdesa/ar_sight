@@ -217,7 +217,7 @@ abstract class _SceneEvalStore with Store {
 
     try {
       // Pequeno delay para permitir visualizar a transição de "upload complete" para "processing"
-      await Future.delayed(const Duration(milliseconds: 1500));
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       // Atualiza imediatamente para 'processing' quando diagnóstico começa
       runInAction(() {
@@ -260,7 +260,7 @@ abstract class _SceneEvalStore with Store {
       });
 
       // Pequeno delay para permitir visualizar a mensagem "Diagnosis ready" antes de navegar
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 600));
     } catch (e) {
       runInAction(() {
         diagnosisError = e.toString();
