@@ -3,6 +3,14 @@ import 'backend_candidate.dart';
 
 class ApiConfig {
   static const List<BackendCandidate> candidates = [
+    // jetson jeff
+    BackendCandidate(
+      name: 'Jetson Jeff',
+      baseUrl: 'http://192.168.155.37:8000',
+      healthCheckTimeout: Duration(seconds: 5),
+      diagnosisTimeout: Duration(seconds: 30),
+      pollingIntervalSeconds: 1,
+    ),
     // Jetson Orin AGX - Processador rápido
     BackendCandidate(
       name: 'Jetson Orin',
@@ -26,6 +34,15 @@ class ApiConfig {
       name: 'Legion',
       // baseUrl: 'http://pc062.local:8000',
       baseUrl: 'http://10.217.121.159:8000',
+      healthCheckTimeout: Duration(seconds: 5),
+      diagnosisTimeout: Duration(seconds: 30),
+      pollingIntervalSeconds: 1,
+    ),
+
+    // jetson jeff
+    BackendCandidate(
+      name: 'Jetson Jeff',
+      baseUrl: 'http://192.168.155.37:8000',
       healthCheckTimeout: Duration(seconds: 5),
       diagnosisTimeout: Duration(seconds: 30),
       pollingIntervalSeconds: 1,

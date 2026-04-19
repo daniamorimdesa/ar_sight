@@ -687,7 +687,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 - **Frame Compression**: JPEG/WebP encoding for reduced bandwidth
 - **Incremental Upload**: Stream frames as captured rather than batch
-- **Local Processing**: On-device preliminary analysis before cloud upload
+- **Local Processing**: On-device preliminary analysis before cloud upload3
 - **Result Caching**: Memoization of identical scene diagnoses
 
 ## 17. Summary and Design Philosophy
