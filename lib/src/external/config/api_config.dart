@@ -6,11 +6,12 @@ class ApiConfig {
     // jetson jeff
     BackendCandidate(
       name: 'Jetson Jeff',
-      baseUrl: 'http://192.168.155.37:8000',
+      baseUrl: 'http://192.168.15.3:8000',
       healthCheckTimeout: Duration(seconds: 5),
       diagnosisTimeout: Duration(seconds: 30),
       pollingIntervalSeconds: 1,
     ),
+
     // Jetson Orin AGX - Processador rápido
     BackendCandidate(
       name: 'Jetson Orin',
@@ -25,7 +26,9 @@ class ApiConfig {
       name: 'Jetson Nano',
       baseUrl: 'http://jetson-nano.local:8000',
       healthCheckTimeout: Duration(seconds: 15),
-      diagnosisTimeout: Duration(seconds: 240), // 4 minutos para cobrir 3 min de processamento
+      diagnosisTimeout: Duration(
+        seconds: 240,
+      ), // 4 minutos para cobrir 3 min de processamento
       pollingIntervalSeconds: 5,
     ),
 
@@ -34,15 +37,6 @@ class ApiConfig {
       name: 'Legion',
       // baseUrl: 'http://pc062.local:8000',
       baseUrl: 'http://10.217.121.159:8000',
-      healthCheckTimeout: Duration(seconds: 5),
-      diagnosisTimeout: Duration(seconds: 30),
-      pollingIntervalSeconds: 1,
-    ),
-
-    // jetson jeff
-    BackendCandidate(
-      name: 'Jetson Jeff',
-      baseUrl: 'http://192.168.155.37:8000',
       healthCheckTimeout: Duration(seconds: 5),
       diagnosisTimeout: Duration(seconds: 30),
       pollingIntervalSeconds: 1,
