@@ -1,16 +1,25 @@
-// scene_diagnosis_adapter.dart: adaptador para converter a resposta bruta do backend em um objeto SceneDiagnosis estruturado
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../../models/recommendation_group.dart';
 import '../../models/scene_diagnosis.dart';
 
+/// Converts raw backend diagnosis responses into structured [SceneDiagnosis]
+/// instances used by the presentation layer.
+///
+/// The backend response contains nested metadata, performance metrics,
+/// statistics, frame-level results, and recommendation data. This adapter
+/// centralizes the parsing logic so that UI components can work with a
+/// consistent domain model instead of handling raw JSON maps directly.
 class SceneDiagnosisAdapter {
+  /// Creates a [SceneDiagnosis] from a backend response [map].
+  ///
+  /// Missing or incomplete fields are replaced with safe fallback values to
+  /// keep the application stable when optional backend data is unavailable.
   static SceneDiagnosis fromBackend(Map<String, dynamic> map) {
-    // DEBUG: Exibir JSON completo da resposta do backend
     if (kDebugMode) {
       debugPrint('=== BACKEND RESPONSE JSON ===');
-      debugPrint(JsonEncoder.withIndent('  ').convert(map));
+      debugPrint(const JsonEncoder.withIndent('  ').convert(map));
       debugPrint('============================');
       debugPrint('Metadata received: ${map['metadata']}');
     }
@@ -29,12 +38,16 @@ class SceneDiagnosisAdapter {
 
     final normalCount = summary['normal_count'] ?? 0;
     final problemCount = summary['problem_count'] ?? 0;
-    
-    // Processing time vem de summary.processing_time_s ou usa total_s de performance
-    final processingTimeS = ((summary['processing_time_s'] ?? performance['total_s'] ?? 0) as num).toStringAsFixed(2);
+
+    // Prefer the summarized processing time, but fall back to the total
+    // performance time when the summary field is not provided.
+    final processingTimeS =
+        ((summary['processing_time_s'] ?? performance['total_s'] ?? 0) as num)
+            .toStringAsFixed(2);
 
     final recommendationsRaw = summary['recommendations'] ?? [];
     final List<String> recommendations = [];
+
     for (final r in recommendationsRaw) {
       final actions = r['actions'] ?? [];
       recommendations.addAll(List<String>.from(actions));
@@ -42,7 +55,6 @@ class SceneDiagnosisAdapter {
 
     final isPass = overallRisk.toLowerCase() == 'low';
 
-    // Gerar RecommendationGroups
     final recommendationGroups = _buildRecommendationGroups(
       isPass: isPass,
       recommendationsRaw: recommendationsRaw,
@@ -82,6 +94,12 @@ class SceneDiagnosisAdapter {
     );
   }
 
+  /// Builds recommendation groups according to the diagnosis outcome.
+  ///
+  /// Passing scenes receive a single general recommendation group, while
+  /// failing scenes are grouped by frame illumination condition. This allows
+  /// the UI to display both the affected frame indices and the corresponding
+  /// corrective actions.
   static List<RecommendationGroup> _buildRecommendationGroups({
     required bool isPass,
     required List<dynamic> recommendationsRaw,
@@ -90,77 +108,85 @@ class SceneDiagnosisAdapter {
     final groups = <RecommendationGroup>[];
 
     if (isPass) {
-      // Para cenas boas (pass), criar um grupo com condition="adequate_acceptable"
       final recommendations = <String>[];
+
       for (final r in recommendationsRaw) {
         final actions = r['actions'] ?? [];
         recommendations.addAll(List<String>.from(actions));
       }
 
       if (recommendations.isNotEmpty) {
-        groups.add(RecommendationGroup(
-          condition: 'adequate_acceptable',
-          frames: null,
-          actions: recommendations,
-        ));
+        groups.add(
+          RecommendationGroup(
+            condition: 'adequate_acceptable',
+            frames: null,
+            actions: recommendations,
+          ),
+        );
       }
     } else {
-      // Para cenas ruins (fail), agrupar por illumination_label dos frames
-      // Mapear cada condition (ex: underexposed, overexposed) para seus frames
       final conditionMap = <String, List<int>>{};
 
       for (int i = 0; i < frames.length; i++) {
         final frame = frames[i];
         final metrics = frame['metrics'] ?? {};
-        final illuminationLabel = (metrics['illumination_label'] ?? 'unknown').toString().toLowerCase();
+        final illuminationLabel = (metrics['illumination_label'] ?? 'unknown')
+            .toString()
+            .toLowerCase();
 
-        // Ignorar frames com condição normal
-        if (illuminationLabel == 'normal' || illuminationLabel == 'adequate' || illuminationLabel == 'ideal') {
+        // Frames classified as normal do not require corrective action groups.
+        if (illuminationLabel == 'normal' ||
+            illuminationLabel == 'adequate' ||
+            illuminationLabel == 'ideal') {
           continue;
         }
 
-        if (!conditionMap.containsKey(illuminationLabel)) {
-          conditionMap[illuminationLabel] = [];
-        }
-        // Adicionar o índice do frame (1-based)
+        conditionMap.putIfAbsent(illuminationLabel, () => []);
+
+        // Frame numbers are stored as 1-based indices for user-facing display.
         conditionMap[illuminationLabel]!.add(i + 1);
       }
 
-      // Para cada condition encontrada, buscar as ações correspondentes no backend
       final recMap = <String, List<String>>{};
+
       for (final r in recommendationsRaw) {
         final condition = r['condition']?.toString().toLowerCase() ?? '';
         final actions = List<String>.from(r['actions'] ?? []);
-        
+
         if (condition.isNotEmpty && actions.isNotEmpty) {
           recMap[condition] = actions;
         }
       }
 
-      // Criar os grupos
-      final sortedConditions = conditionMap.keys.toList();
-      sortedConditions.sort(); // ordenar alfabeticamente para consistência
+      final sortedConditions = conditionMap.keys.toList()..sort();
 
       for (final condition in sortedConditions) {
         final frameIndices = conditionMap[condition]!;
         final actions = recMap[condition] ?? [];
 
-        // Se não houver ações específicas no backend, gerar padrões
+        // Use local fallback actions when the backend does not provide
+        // condition-specific recommendations.
         if (actions.isEmpty) {
           actions.addAll(_getDefaultActionsForCondition(condition));
         }
 
-        groups.add(RecommendationGroup(
-          condition: condition,
-          frames: frameIndices,
-          actions: actions,
-        ));
+        groups.add(
+          RecommendationGroup(
+            condition: condition,
+            frames: frameIndices,
+            actions: actions,
+          ),
+        );
       }
     }
 
     return groups;
   }
 
+  /// Returns fallback corrective actions for a given illumination [condition].
+  ///
+  /// These recommendations are used only when the backend response does not
+  /// include condition-specific actions.
   static List<String> _getDefaultActionsForCondition(String condition) {
     final conditionLower = condition.toLowerCase();
 
@@ -176,7 +202,8 @@ class SceneDiagnosisAdapter {
         'Reduce direct lighting or use diffusers to soften harsh light',
         'Reposition to avoid strong backlighting',
       ];
-    } else if (conditionLower.contains('uneven') || conditionLower.contains('mixed')) {
+    } else if (conditionLower.contains('uneven') ||
+        conditionLower.contains('mixed')) {
       return [
         'Move to a location with more uniform lighting',
         'Use additional light sources to fill shadow areas',
@@ -184,7 +211,6 @@ class SceneDiagnosisAdapter {
       ];
     }
 
-    // Default fallback
     return [
       'Adjust the lighting conditions of the scene',
       'Try repositioning to find better lighting',
