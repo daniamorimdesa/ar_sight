@@ -181,19 +181,6 @@ class ApiConfig {
 }
 ```
 
-### Recommended .gitignore Entries
-
-```
-# Local backend configuration
-lib/src/external/config/api_config.dart
-
-# Environment files
-.env
-.env.local
-.env.*.local
-```
-
----
 
 ## Getting Started
 
@@ -375,6 +362,45 @@ The app also displays backend-reported metrics, including:
 - Human-readable recommendations for improving scene conditions
 - Embedded backend validation with Jetson devices
 - Edge AI benchmarking for visual diagnosis pipelines
+
+---
+
+## Pipeline & Screenshots
+
+### Diagnosis Pipeline
+
+The complete AR Sight workflow from capture to diagnosis results:
+
+![Pipeline Diagram](docs/images/pipeline_diagram.svg)
+
+### Application Overview
+
+Screenshots from the AR Sight mobile interface demonstrating the complete diagnostic workflow:
+
+<div align="center">
+  <img src="docs/images/home_page.png" width="22%" alt="Home Screen">
+  <img src="docs/images/result5.png" width="22%" alt="Result - HIGH Risk">
+  <img src="docs/images/result_1.png" width="22%" alt="Result - LOW Risk">
+  <img src="docs/images/result5_2.png" width="22%" alt="Performance Metrics">
+  
+  <p style="font-size: 0.85em; margin-top: 10px;">
+    <strong>AR Sight Application Overview:</strong> (1) Home screen where the user initiates scene capture; 
+    (2) Diagnostic result indicating scene adjustment required (risk: HIGH, dominant condition: underexposed); 
+    (3) Passing result with adequate illumination (risk: LOW); 
+    (4) Performance panel displaying processing time metrics and runtime configuration.
+  </p>
+</div>
+
+---
+
+## Related Repositories
+
+The AR Sight mobile application integrates with diagnosis backends. The following repositories contain the backend services used in this project:
+
+- **[backend_tcc_ar_sight](https://github.com/daniamorimdesa/backend_tcc_ar_sight)** — Primary backend reference implementation for AR scene diagnosis
+- **[backend_tcc_mvp](https://github.com/daniamorimdesa/backend_tcc_mvp)** — Minimum viable product backend used during TCC research and validation
+
+For backend integration details and setup instructions, see [Backend Integration](docs/BACKEND_INTEGRATION.md).
 
 ---
 
