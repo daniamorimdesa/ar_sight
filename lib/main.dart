@@ -1,12 +1,15 @@
-// main.dart: ponto de entrada do aplicativo, configurando o Provider para o SceneEvalStore e iniciando a aplicação com a HomePage como tela inicial
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-
 import 'src/presenter/pages/home/home_page.dart';
 import 'src/presenter/stores/scene_eval_store.dart';
 import 'src/setup/store_factory.dart';
 
+/// Entry point of the ARSIGHT application.
+///
+/// The function initializes Flutter bindings, attempts to load environment
+/// variables, builds the main [SceneEvalStore], and starts the application
+/// with dependency injection configured through [Provider].
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -14,7 +17,7 @@ Future<void> main() async {
     await dotenv.load(fileName: '.env');
   } catch (e) {
     // Keep app startup resilient even when .env is missing or unreadable.
-    debugPrint('Could not load .env: ');
+    debugPrint('Could not load .env: $e');
   }
 
   final store = await buildStore();
@@ -28,7 +31,12 @@ Future<void> main() async {
   );
 }
 
+/// Root widget of the application.
+///
+/// A [MainApp] configures the global [MaterialApp] settings and defines
+/// [HomePage] as the initial screen.
 class MainApp extends StatelessWidget {
+  /// Creates the root application widget.
   const MainApp({super.key});
 
   @override

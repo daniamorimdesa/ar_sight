@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Displays the active frame capture state.
+///
+/// A [CapturingState] shows the scan status, remaining time, number of
+/// captured frames, and a progress indicator while the scene is being scanned.
 class CapturingState extends StatelessWidget {
+  /// Remaining capture time, in seconds.
   final int secondsRemaining;
+
+  /// Current capture progress from `0.0` to `1.0`.
   final double progress;
+
+  /// Number of frames captured so far.
   final int capturedFrames;
 
+  /// Creates a capture progress state widget.
   const CapturingState({
     super.key,
     required this.secondsRemaining,
@@ -21,6 +31,7 @@ class CapturingState extends StatelessWidget {
       key: key,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Main capture status message.
         Text(
           'Scanning your environment',
           style: GoogleFonts.poppins(
@@ -29,7 +40,10 @@ class CapturingState extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
+
         const SizedBox(height: 10),
+
+        // Capture counters displayed above the progress bar.
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -51,7 +65,10 @@ class CapturingState extends StatelessWidget {
             ),
           ],
         ),
+
         const SizedBox(height: 12),
+
+        // Glowing progress bar for the scan progress.
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),

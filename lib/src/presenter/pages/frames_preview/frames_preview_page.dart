@@ -1,16 +1,25 @@
-// frames_preview_page.dart: página para exibir as últimas frames capturadas, 
-// mostrando a qualidade de cada frame e permitindo que o usuário visualize detalhes adicionais ao clicar em cada frame
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../models/frame_data.dart';
 import 'components/frame_card.dart';
 
+/// Displays the captured frames and their diagnosis information.
+///
+/// A [FramesPreviewPage] presents the latest frames captured by the camera in
+/// a grid layout. When frame-level diagnosis data is available, each frame can
+/// also display its associated quality status and metrics through [FrameCard].
 class FramesPreviewPage extends StatelessWidget {
+  /// Captured frame images represented as raw image bytes.
   final List<Uint8List> frames;
+
+  /// Optional diagnosis data associated with each captured frame.
+  ///
+  /// When provided, each [FrameData] entry is matched to the frame at the same
+  /// index in [frames].
   final List<FrameData>? frameDataList;
 
+  /// Creates a frame preview page for the provided [frames].
   const FramesPreviewPage({
     super.key,
     required this.frames,
@@ -23,6 +32,8 @@ class FramesPreviewPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // Top navigation bar for the frame analysis screen.
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -39,6 +50,7 @@ class FramesPreviewPage extends StatelessWidget {
         ),
       ),
 
+      // Responsive grid displaying all captured frames.
       body: GridView.builder(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         itemCount: frames.length,
@@ -49,7 +61,9 @@ class FramesPreviewPage extends StatelessWidget {
           childAspectRatio: 9 / 16,
         ),
         itemBuilder: (context, index) {
-          final frameData = frameDataList != null && index < frameDataList!.length
+          // Match each frame with its diagnosis data when available.
+          final frameData =
+              frameDataList != null && index < frameDataList!.length
               ? frameDataList![index]
               : null;
 
@@ -57,12 +71,9 @@ class FramesPreviewPage extends StatelessWidget {
             frame: frames[index],
             index: index,
             frameData: frameData,
-            accent: accent,
           );
         },
       ),
     );
   }
 }
-
-

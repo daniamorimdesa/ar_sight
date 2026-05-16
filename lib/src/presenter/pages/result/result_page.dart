@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../models/scene_diagnosis.dart';
 import '../scene_eval/scene_eval_page.dart';
 import 'components/frame_overview_card.dart';
@@ -10,27 +9,32 @@ import 'components/runtime_setup_card.dart';
 import 'components/section_title.dart';
 import 'components/summary_card.dart';
 
+/// Displays the final diagnosis result for an evaluated scene.
+///
+/// A [ResultPage] organizes the scene diagnosis into visual sections,
+/// including the main status, summary, frame overview, recommendations,
+/// performance metrics, and runtime setup information.
 class ResultPage extends StatelessWidget {
+  /// Structured diagnosis result returned by the evaluation pipeline.
   final SceneDiagnosis diagnosis;
 
+  /// Creates a result page for the provided [diagnosis].
   const ResultPage({super.key, required this.diagnosis});
 
+  /// Whether the evaluated scene passed the diagnosis criteria.
   bool get _isPass => diagnosis.status.toLowerCase() == 'pass';
 
+  /// Main accent color derived from the diagnosis status.
   Color get _accent =>
       _isPass ? const Color(0xFF38BDF8) : const Color(0xFFF59E0B);
-
-  String get _title => _isPass ? 'SCENE READY' : 'NEEDS IMPROVEMENTS';
-
-  String get _subtitle => _isPass
-      ? 'This scene meets the conditions for AR experiences'
-      : 'This scene needs a few adjustments before AR use';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
+
+      // Transparent navigation bar over the result background.
       appBar: AppBar(
         automaticallyImplyLeading: true,
         backgroundColor: Colors.transparent,
@@ -39,6 +43,7 @@ class ResultPage extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white.withOpacity(0.9)),
         actions: [
+          // Restart the scene evaluation flow.
           IconButton(
             tooltip: 'Run again',
             onPressed: () {
@@ -52,10 +57,13 @@ class ResultPage extends StatelessWidget {
               size: 28,
             ),
           ),
+
+          // Return to the first route in the navigation stack.
           IconButton(
             tooltip: 'Home',
-            onPressed: () =>
-                Navigator.of(context).popUntil((route) => route.isFirst),
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
             icon: Icon(
               Icons.home_rounded,
               color: Colors.white.withOpacity(0.9),
@@ -64,9 +72,10 @@ class ResultPage extends StatelessWidget {
           ),
         ],
       ),
+
       body: Stack(
         children: [
-          // Base gradient with purple and cyan tones
+          // Base gradient with dark blue and purple tones.
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -82,7 +91,8 @@ class ResultPage extends StatelessWidget {
               ),
             ),
           ),
-          // Radial gradient overlay for accent color
+
+          // Soft radial overlay for depth and color variation.
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -98,7 +108,8 @@ class ResultPage extends StatelessWidget {
               ),
             ),
           ),
-          // Secondary accent spot
+
+          // Secondary decorative accent spot.
           Positioned(
             right: -100,
             top: -100,
@@ -116,14 +127,18 @@ class ResultPage extends StatelessWidget {
               ),
             ),
           ),
-          // Dark overlay for better text readability
+
+          // Dark overlay to improve content readability.
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.35)),
           ),
+
+          // Scrollable diagnosis content.
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(18, 18, 18, 120),
               children: [
+                // Main result status area.
                 HeroSection(isPass: _isPass, accent: _accent),
 
                 const SizedBox(height: 10),
@@ -132,23 +147,25 @@ class ResultPage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
+                // General scene diagnosis summary.
                 SectionTitle(title: 'SCENE SUMMARY'),
                 const SizedBox(height: 10),
                 SummaryCard(diagnosis: diagnosis, accent: _accent),
 
                 const SizedBox(height: 18),
 
+                // Aggregated frame-level status overview.
                 SectionTitle(title: 'FRAME OVERVIEW'),
                 const SizedBox(height: 10),
                 FrameOverviewCard(
                   normalCount: diagnosis.normalCount,
                   problemCount: diagnosis.problemCount,
-                  accent: _accent,
                   diagnosis: diagnosis,
                 ),
 
                 const SizedBox(height: 18),
 
+                // Recommended actions based on detected scene conditions.
                 SectionTitle(title: 'RECOMMENDATIONS'),
                 const SizedBox(height: 10),
                 RecommendationsCard(
@@ -160,22 +177,18 @@ class ResultPage extends StatelessWidget {
 
                 const SizedBox(height: 18),
 
+                // Processing and validation performance metrics.
                 SectionTitle(title: 'PERFORMANCE'),
                 const SizedBox(height: 10),
                 PerformanceSection(diagnosis: diagnosis, accent: _accent),
 
                 const SizedBox(height: 18),
 
+                // Backend runtime and model configuration details.
                 SectionTitle(title: 'RUNTIME SETUP'),
                 const SizedBox(height: 10),
                 RuntimeSetupCard(
                   diagnosis: diagnosis,
-                  accent: const Color.fromARGB(
-                    255,
-                    144,
-                    129,
-                    231,
-                  ).withOpacity(0.92),
                 ),
               ],
             ),

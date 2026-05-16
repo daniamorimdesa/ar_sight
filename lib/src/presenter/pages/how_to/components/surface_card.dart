@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
+/// Displays a reusable elevated surface container.
+///
+/// A [SurfaceCard] wraps content inside a white card with rounded corners,
+/// border, padding, and a subtle shadow. It is used to group related guidance
+/// items in the instructions page.
 class SurfaceCard extends StatelessWidget {
+  /// Content displayed inside the card.
   final Widget child;
 
+  /// Creates a styled surface card.
   const SurfaceCard({super.key, required this.child});
 
   @override

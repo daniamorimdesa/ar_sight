@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Displays a numbered recommendation row for the dark result layout.
+///
+/// A [RecommendationRowDark] presents one corrective action with a circular
+/// index marker and the recommendation text. It is used inside the result page
+/// recommendation section.
 class RecommendationRowDark extends StatelessWidget {
+  /// One-based recommendation number displayed inside the circular marker.
   final int index;
+
+  /// Recommendation text displayed to the user.
   final String text;
+
+  /// Accent color used for the numbered marker.
   final Color accent;
 
+  /// Creates a numbered recommendation row.
   const RecommendationRowDark({
     super.key,
     required this.index,
@@ -20,15 +31,12 @@ class RecommendationRowDark extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Circular index marker.
           Container(
-            width: 36, // Circle diameter
-            height: 36, // Circle diameter
+            width: 36,
+            height: 36,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: accent,
-             
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
             child: Text(
               '$index',
               style: GoogleFonts.poppins(
@@ -38,7 +46,10 @@ class RecommendationRowDark extends StatelessWidget {
               ),
             ),
           ),
+
           const SizedBox(width: 14),
+
+          // Recommendation description.
           Expanded(
             child: Text(
               text,

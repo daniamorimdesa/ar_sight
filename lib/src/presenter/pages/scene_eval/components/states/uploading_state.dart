@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Displays the upload state while captured frames are being sent.
+///
+/// An [UploadingState] informs the user that the captured frame batch is being
+/// uploaded to the backend before diagnosis starts.
 class UploadingState extends StatelessWidget {
+  /// Creates the upload progress state.
   const UploadingState({super.key});
 
   @override
@@ -12,16 +17,14 @@ class UploadingState extends StatelessWidget {
       key: key,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Ícone com glow
+        // Glowing upload icon.
         Container(
           width: 56,
           height: 56,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: accent.withOpacity(0.12),
-            border: Border.all(
-              color: accent.withOpacity(0.25),
-            ),
+            border: Border.all(color: accent.withOpacity(0.25)),
             boxShadow: [
               BoxShadow(
                 color: accent.withOpacity(0.22),
@@ -39,6 +42,7 @@ class UploadingState extends StatelessWidget {
 
         const SizedBox(height: 12),
 
+        // Upload progress message.
         Text(
           'Sending frames...',
           textAlign: TextAlign.center,
@@ -51,7 +55,7 @@ class UploadingState extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // loader com glow
+        // Glowing loading indicator.
         Container(
           width: 30,
           height: 30,

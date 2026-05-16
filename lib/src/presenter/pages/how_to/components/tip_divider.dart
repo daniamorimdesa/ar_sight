@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// Displays a visual separator between instruction rows.
+///
+/// A [TipDivider] is used inside guidance cards to separate individual tips
+/// while keeping consistent spacing and color.
 class TipDivider extends StatelessWidget {
+  /// Creates a divider for instruction sections.
   const TipDivider({super.key});
 
   @override

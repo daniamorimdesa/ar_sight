@@ -1,12 +1,7 @@
-// scene_eval_store.dart: responsável por gerenciar o estado da captura e avaliação da cena, incluindo a contagem regressiva, o progresso da captura, os frames capturados e o resultado da avaliação.
-
-// comando para rebuildar store:  dart run build_runner build --delete-conflicting-outputs
-
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:mobx/mobx.dart';
-
 import '../../external/adapters/scene_diagnosis_adapter.dart';
 import '../../external/config/backend_session.dart';
 import '../../external/datasources/scene_datasource.dart';
@@ -15,81 +10,101 @@ import '../../external/services/camera_service.dart';
 import '../../models/scene_diagnosis.dart';
 
 part 'scene_eval_store.g.dart';
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Rebuild generated store file with:
+// dart run build_runner build --delete-conflicting-outputs
+
+/// MobX store responsible for the scene evaluation workflow.
+///
+/// A [SceneEvalStore] coordinates frame capture, upload, backend diagnosis,
+/// polling, result adaptation, and UI state updates during the complete
+/// evaluation flow.
 class SceneEvalStore = _SceneEvalStore with _$SceneEvalStore;
 
+/// Store implementation for scene capture and diagnosis state management.
 abstract class _SceneEvalStore with Store {
-
-  // Instâncias dos datasources para avaliação da cena e upload dos frames, injetados via construtor para facilitar testes e flexibilidade
+  /// Datasource used to start, poll, and retrieve scene diagnosis results.
   final SceneDatasource datasource;
+
+  /// Datasource used to upload captured frames to the backend.
   final SceneUploadDatasource uploadDatasource;
+
+  /// Active backend session containing endpoint and timeout configuration.
   final BackendSession backendSession;
 
+  /// Creates the scene evaluation store with injected dependencies.
+  ///
+  /// Dependency injection keeps the store easier to test and allows different
+  /// datasource implementations, such as real HTTP datasources or fake ones.
   _SceneEvalStore(this.datasource, this.uploadDatasource, this.backendSession);
 
-  // Timer para contagem regressiva e atualização de progresso durante a captura
-  Timer? _timer; 
+  /// Timer used to update capture progress and remaining time.
+  Timer? _timer;
 
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // OBSERVABLES
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // flag para indicar se a captura está em andamento
+  /// Whether the camera capture step is currently active.
   @observable
   bool isCapturing = false;
 
-  // flag para indicar se o upload dos frames está em andamento
+  /// Whether captured frames are currently being uploaded.
   @observable
-  bool isUploading = false; 
-  
-  // flag para indicar se o diagnóstico está em andamento
+  bool isUploading = false;
+
+  /// Whether backend diagnosis is currently running.
   @observable
   bool isDiagnosing = false;
 
-  // número de frames capturados até o momento
+  /// Number of frames captured in the current evaluation.
   @observable
   int capturedFrames = 0;
 
-  // progresso da captura (0.0 a 1.0)
+  /// Capture progress from `0.0` to `1.0`.
   @observable
   double progress = 0.0;
 
-  // segundos restantes para o final da captura
+  /// Remaining capture time, in seconds.
   @observable
   int secondsRemaining = 10;
 
-  // frames capturados na última avaliação
+  /// Frames captured during the latest evaluation.
   @observable
   List<Uint8List> lastCapturedFrames = [];
 
-  // resultado da última avaliação
+  /// Diagnosis result from the latest completed evaluation.
   @observable
   SceneDiagnosis? lastResult;
 
-  // resposta do upload, contendo informações como batch_id, caso o upload seja bem-sucedido
+  /// Raw upload response returned by the backend.
+  ///
+  /// This usually contains metadata such as the generated `batch_id`.
   @observable
   Map<String, dynamic>? lastUploadResponse;
 
-  // mensagem de erro do upload, caso ocorra
+  /// Upload error message, when the upload step fails.
   @observable
   String? uploadError;
 
-  // mensagem de erro do diagnóstico, caso ocorra
+  /// Diagnosis error message, when the diagnosis step fails.
   @observable
   String? diagnosisError;
 
-  // batch_id retornado pelo backend após o upload dos frames, usado para acompanhar o status do diagnóstico
+  /// Batch identifier returned by the backend after upload.
+  ///
+  /// This identifier is used to start diagnosis and poll its status.
   @observable
-  String? batchId; 
+  String? batchId;
 
-  // status do diagnóstico: idle, uploading, uploaded, processing, completed, failed
+  /// Current diagnosis workflow status.
+  ///
+  /// Expected values include `idle`, `uploading`, `uploaded`, `processing`,
+  /// `completed`, `failed`, or backend-defined status values.
   @observable
-  String diagnosisStatus = 'idle'; 
+  String diagnosisStatus = 'idle';
 
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // AÇÕES
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // método que inicia o timer para atualizar o progresso e os segundos restantes durante a captura
-  void _startCountdown(Duration duration) { 
+  /// Starts the countdown used during the capture window.
+  ///
+  /// The timer periodically updates [progress] and [secondsRemaining] so the
+  /// UI can reflect capture progress in real time.
+  void _startCountdown(Duration duration) {
     final start = DateTime.now();
     final end = start.add(duration);
 
@@ -113,9 +128,13 @@ abstract class _SceneEvalStore with Store {
     });
   }
 
-  // método para iniciar a captura e avaliação da cena, capturando frames da câmera, enviando para upload e acompanhamento do diagnóstico
+  /// Starts the full scene capture and evaluation workflow.
+  ///
+  /// The method captures frames from the provided camera [controller], stores
+  /// them for later inspection, uploads them to the backend, and starts the
+  /// diagnosis workflow.
   @action
-  Future<void> startCapture(CameraController controller) async { 
+  Future<void> startCapture(CameraController controller) async {
     isCapturing = true;
     isUploading = false;
     isDiagnosing = false;
@@ -128,14 +147,13 @@ abstract class _SceneEvalStore with Store {
     lastResult = null;
     batchId = null;
 
-    // duração total da captura
-    const duration = Duration(seconds: 10); 
+    const duration = Duration(seconds: 10);
     _startCountdown(duration);
-    
-    // captura os frames da câmera usando o CameraService, atualizando o número de frames capturados a cada nova captura
+
     try {
       final cameraService = CameraService(controller);
 
+      // Capture frames and update the UI after each successful capture.
       final frames = await cameraService.captureFor(
         duration: duration,
         interval: const Duration(seconds: 1),
@@ -147,23 +165,20 @@ abstract class _SceneEvalStore with Store {
         },
       );
 
-      // runInAction é usado para garantir que as atualizações de estado sejam feitas dentro de uma ação do MobX, 
-      // permitindo que a interface reaja corretamente às mudanças de estado
+      // Store the final capture state before upload starts.
       runInAction(() {
-        capturedFrames = frames.length; // Atualiza o número final de frames capturados após a conclusão da captura
-        progress = 1.0;                 // Garante que o progresso esteja completo quando a captura terminar
-        secondsRemaining = 0;           // Garante que os segundos restantes sejam 0 quando a captura terminar
-        lastCapturedFrames = frames;    // Armazena os frames capturados para referência futura e upload
-        isCapturing = false;            // Atualiza a flag de captura para false após a conclusão da captura
+        capturedFrames = frames.length;
+        progress = 1.0;
+        secondsRemaining = 0;
+        lastCapturedFrames = frames;
+        isCapturing = false;
       });
 
-      // Verifica se algum frame foi capturado antes de tentar enviar para upload, lançando uma exceção se a lista de frames estiver vazia
       if (frames.isEmpty) {
-        throw Exception('Nenhum frame foi capturado.');
+        throw Exception('No frames were captured.');
       }
 
-      // chama o método para enviar os frames para upload e acompanhar o diagnóstico
-      await _uploadAndDiagnose(frames); 
+      await _uploadAndDiagnose(frames);
     } catch (e) {
       runInAction(() {
         diagnosisError = e.toString();
@@ -174,37 +189,36 @@ abstract class _SceneEvalStore with Store {
     }
   }
 
-  // método para enviar os frames capturados para upload e acompanhar o processo de diagnóstico, incluindo o polling do status do diagnóstico até a conclusão
+  /// Uploads captured [frames] and runs the backend diagnosis workflow.
+  ///
+  /// This method uploads the frame batch, extracts the backend `batch_id`,
+  /// starts diagnosis, polls the diagnosis status until completion, retrieves
+  /// the final result, and adapts it into a [SceneDiagnosis].
   @action
-  Future<void> _uploadAndDiagnose(List<Uint8List> frames) async { 
-
-    // 1. upload dos frames
+  Future<void> _uploadAndDiagnose(List<Uint8List> frames) async {
+    // Upload captured frames.
     isUploading = true;
     diagnosisStatus = 'uploading';
 
     try {
-      // Envia os frames para upload e aguarda a resposta do backend
-      final uploadResponse = await uploadDatasource.uploadFrames(frames); 
-
-      // Verifica se a resposta do upload contém um batch_id válido, lançando uma exceção se o batch_id estiver ausente ou vazio
-      final returnedBatchId = uploadResponse['batch_id']?.toString(); 
+      final uploadResponse = await uploadDatasource.uploadFrames(frames);
+      final returnedBatchId = uploadResponse['batch_id']?.toString();
 
       if (returnedBatchId == null || returnedBatchId.isEmpty) {
-        throw Exception('Resposta inválida: batch_id não encontrado.');
+        throw Exception('Invalid response: batch_id not found.');
       }
-      
-      // runInAction é usado para garantir que as atualizações de estado sejam feitas dentro de uma ação do MobX, 
-      // permitindo que a interface reaja corretamente às mudanças de estado
-      runInAction(() { 
-        batchId = returnedBatchId;           // Armazena o batch_id retornado pelo backend para acompanhar o diagnóstico
-        lastUploadResponse = uploadResponse; // Armazena a resposta do upload para referência futura
-        diagnosisStatus = 'uploaded';        // Atualiza o status do diagnóstico para "uploaded" após o upload bem-sucedido
+
+      runInAction(() {
+        batchId = returnedBatchId;
+        lastUploadResponse = uploadResponse;
+        diagnosisStatus = 'uploaded';
       });
     } catch (e) {
       runInAction(() {
         uploadError = e.toString();
         diagnosisStatus = 'upload_failed';
       });
+
       rethrow;
     } finally {
       runInAction(() {
@@ -212,60 +226,58 @@ abstract class _SceneEvalStore with Store {
       });
     }
 
-    // 2. iniciar o diagnóstico
+    // Start backend diagnosis.
     isDiagnosing = true;
 
     try {
-      // Pequeno delay para permitir visualizar a transição de "upload complete" para "processing"
+      // Keep the upload-complete state visible before switching to processing.
       await Future.delayed(const Duration(milliseconds: 1000));
 
-      // Atualiza imediatamente para 'processing' quando diagnóstico começa
       runInAction(() {
-        diagnosisStatus = 'processing'; // Atualiza o status do diagnóstico para "processing" imediatamente após iniciar o diagnóstico no backend
+        diagnosisStatus = 'processing';
       });
 
-      await datasource.startDiagnosis(batchId!); // Inicia o diagnóstico no backend usando o batch_id retornado pelo upload
+      await datasource.startDiagnosis(batchId!);
 
-      // 3. polling - verifica o status do diagnóstico em intervalos personalizados até que seja "completed" ou "failed", lançando uma exceção em caso de falha
+      // Poll the backend until diagnosis is completed or failed.
       while (true) {
-        await Future.delayed(Duration(seconds: backendSession.pollingIntervalSeconds)); // Aguarda intervalo personalizado por backend antes de verificar o status novamente
+        await Future.delayed(
+          Duration(seconds: backendSession.pollingIntervalSeconds),
+        );
 
-        final statusResponse = await datasource.getDiagnosisStatus(batchId!); // Verifica o status do diagnóstico no backend usando o batch_id para acompanhar o progresso do diagnóstico
-        final status = statusResponse['status']?.toString() ?? 'unknown';     // Extrai o status do diagnóstico da resposta do backend, usando "unknown" como valor padrão caso o campo "status" esteja ausente
+        final statusResponse = await datasource.getDiagnosisStatus(batchId!);
+        final status = statusResponse['status']?.toString() ?? 'unknown';
 
         runInAction(() {
-          diagnosisStatus = status; 
+          diagnosisStatus = status;
         });
 
-        // Verifica o status do diagnóstico e age de acordo: 
-        // se for "completed", sai do loop; 
-        // se for "failed", lança uma exceção com a mensagem de erro retornada pelo backend ou uma mensagem genérica caso o campo "error" esteja ausente
         if (status == 'completed') {
           break;
         }
 
         if (status == 'failed') {
           throw Exception(
-            statusResponse['error']?.toString() ?? 'Diagnóstico falhou.',
+            statusResponse['error']?.toString() ?? 'Diagnosis failed.',
           );
         }
       }
 
-      // 4. resultado final
-      final resultResponse = await datasource.getDiagnosisResult(batchId!); // Obtém o resultado final do diagnóstico no backend usando o batch_id para acessar os dados avaliados da cena
+      final resultResponse = await datasource.getDiagnosisResult(batchId!);
 
       runInAction(() {
-        lastResult = SceneDiagnosisAdapter.fromBackend(resultResponse); // Converte a resposta do backend para o modelo SceneDiagnosis usando o adapter e armazena como o resultado da última avaliação
-        diagnosisStatus = 'completed';                                  // Atualiza o status do diagnóstico para "completed" após receber o resultado final do backend
+        lastResult = SceneDiagnosisAdapter.fromBackend(resultResponse);
+        diagnosisStatus = 'completed';
       });
 
-      // Pequeno delay para permitir visualizar a mensagem "Diagnosis ready" antes de navegar
+      // Keep the completion message visible briefly before navigation.
       await Future.delayed(const Duration(milliseconds: 600));
     } catch (e) {
       runInAction(() {
         diagnosisError = e.toString();
         diagnosisStatus = 'failed';
       });
+
       rethrow;
     } finally {
       runInAction(() {
@@ -273,8 +285,8 @@ abstract class _SceneEvalStore with Store {
       });
     }
   }
-  
-  // método para limpar os dados da última avaliação e cancelar o timer, garantindo que o estado seja resetado para permitir novas capturas e avaliações
+
+  /// Cancels active timers when the store is no longer needed.
   void dispose() {
     _timer?.cancel();
   }

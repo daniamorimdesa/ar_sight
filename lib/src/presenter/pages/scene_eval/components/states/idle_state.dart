@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Displays the idle guidance shown before scene capture starts.
+///
+/// An [IdleState] provides short instructions to help the user perform a
+/// stable scan and capture useful visual features for AR tracking.
 class IdleState extends StatelessWidget {
+  /// Creates the idle guidance state.
   const IdleState({super.key});
 
   @override
@@ -10,6 +15,7 @@ class IdleState extends StatelessWidget {
       key: key,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Primary scan guidance.
         Text(
           'Move slowly and keep the phone steady.',
           textAlign: TextAlign.center,
@@ -20,7 +26,10 @@ class IdleState extends StatelessWidget {
             height: 1.35,
           ),
         ),
+
         const SizedBox(height: 6),
+
+        // Secondary environment guidance.
         Text(
           'Capture textures and avoid reflections.',
           textAlign: TextAlign.center,

@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 
+/// Displays the bottom navigation bar used on the home page.
+///
+/// A [HomeBottomBar] provides quick access to the instructions screen, the
+/// latest captured frames, and the latest diagnosis result. Visual badges are
+/// used to indicate whether frame data or diagnosis data is currently
+/// available.
 class HomeBottomBar extends StatelessWidget {
+  /// Callback executed when the instructions button is tapped.
   final VoidCallback onInstructionsTap;
+
+  /// Callback executed when the latest frames button is tapped.
   final VoidCallback onLastFramesTap;
+
+  /// Callback executed when the latest diagnosis button is tapped.
   final VoidCallback onLastDiagnosisTap;
 
-  // NOVO:
+  /// Whether there are captured frames available from the latest evaluation.
   final bool hasFrames;
-  final String? lastStatus; // "pass" | "fail" | null
 
+  /// Status of the latest diagnosis result.
+  ///
+  /// Expected values are `pass`, `fail`, or `null` when no diagnosis is
+  /// available.
+  final String? lastStatus;
+
+  /// Creates the home page bottom navigation bar.
   const HomeBottomBar({
     super.key,
     required this.onInstructionsTap,
@@ -31,17 +48,22 @@ class HomeBottomBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            // Opens the usage instructions page.
             _BottomBarButton(
               icon: Icons.help_outline_rounded,
               onTap: onInstructionsTap,
             ),
 
+            // Opens the latest captured frames, when available.
             _BottomBarButton(
-              icon: hasFrames ? Icons.photo_library : Icons.photo_library_outlined,
+              icon: hasFrames
+                  ? Icons.photo_library
+                  : Icons.photo_library_outlined,
               onTap: onLastFramesTap,
               badgeColor: hasFrames ? Colors.cyanAccent : null,
             ),
 
+            // Opens the latest diagnosis result, when available.
             _BottomBarButton(
               icon: hasDiagnosis
                   ? (isPass ? Icons.verified : Icons.error)
@@ -56,13 +78,21 @@ class HomeBottomBar extends StatelessWidget {
   }
 }
 
+/// Internal icon button used by [HomeBottomBar].
+///
+/// The button can optionally display a small colored badge to indicate that
+/// related data is available.
 class _BottomBarButton extends StatelessWidget {
+  /// Icon displayed by the button.
   final IconData icon;
+
+  /// Callback executed when the button is tapped.
   final VoidCallback onTap;
 
-  // NOVO:
+  /// Optional color used for the availability/status badge.
   final Color? badgeColor;
 
+  /// Creates a bottom bar icon button.
   const _BottomBarButton({
     required this.icon,
     required this.onTap,
@@ -74,6 +104,7 @@ class _BottomBarButton extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
+        // Main navigation icon.
         IconButton(
           onPressed: onTap,
           icon: Icon(
@@ -84,6 +115,7 @@ class _BottomBarButton extends StatelessWidget {
           iconSize: 28,
         ),
 
+        // Optional availability/status badge.
         if (badgeColor != null)
           Positioned(
             right: 6,

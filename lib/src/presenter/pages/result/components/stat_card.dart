@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Displays a compact statistic card with an icon, value, and title.
+///
+/// A [StatCard] is used to present performance metrics in the result page,
+/// such as PDI processing time and SLM inference time.
 class StatCard extends StatelessWidget {
+  /// Metric title displayed below the value.
   final String title;
+
+  /// Formatted metric value displayed prominently in the card.
   final String value;
+
+  /// Icon representing the metric category.
   final IconData icon;
+
+  /// Accent color used as the default icon color.
   final Color accent;
+
+  /// Optional custom color for the metric icon.
+  ///
+  /// When omitted, [accent] is used.
   final Color? iconColor;
 
+  /// Creates a statistic card with a [title], [value], and [icon].
   const StatCard({
     super.key,
     required this.title,
@@ -30,8 +46,12 @@ class StatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Metric category icon.
           Icon(icon, color: iconColor ?? accent, size: 32),
+
           const SizedBox(height: 18),
+
+          // Main metric value.
           Text(
             value,
             maxLines: 2,
@@ -42,7 +62,10 @@ class StatCard extends StatelessWidget {
               color: Colors.white.withOpacity(0.92),
             ),
           ),
+
           const SizedBox(height: 6),
+
+          // Metric title.
           Text(
             title,
             maxLines: 2,

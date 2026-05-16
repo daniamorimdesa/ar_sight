@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../models/frame_data.dart';
 import '../../../../models/scene_diagnosis.dart';
 import '../../../stores/scene_eval_store.dart';
 import '../../frames_preview/frames_preview_page.dart';
 import 'glass_card_dark.dart';
 
+/// Displays an overview of frame-level diagnosis results.
+///
+/// A [FrameOverviewCard] summarizes how many frames were classified as
+/// adequate or requiring attention. It also provides a shortcut to inspect the
+/// captured frames in detail.
 class FrameOverviewCard extends StatelessWidget {
+  /// Number of frames classified as adequate.
   final int normalCount;
+
+  /// Number of frames classified as requiring attention.
   final int problemCount;
-  final Color accent;
+
+  /// Optional full diagnosis data used to build frame-level details.
   final SceneDiagnosis? diagnosis;
 
+  /// Creates a frame overview card.
   const FrameOverviewCard({
     super.key,
     required this.normalCount,
     required this.problemCount,
-    required this.accent,
     this.diagnosis,
   });
 
@@ -39,6 +47,7 @@ class FrameOverviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Progress bar for frames classified as adequate.
           _OverviewBarRow(
             label: 'Adequate',
             value: normalCount,
@@ -49,6 +58,7 @@ class FrameOverviewCard extends StatelessWidget {
 
           const SizedBox(height: 12),
 
+          // Progress bar for frames requiring attention.
           _OverviewBarRow(
             label: 'Attention',
             value: problemCount,
@@ -59,6 +69,7 @@ class FrameOverviewCard extends StatelessWidget {
 
           const SizedBox(height: 18),
 
+          // Button used to open the captured frame preview page.
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
@@ -78,7 +89,7 @@ class FrameOverviewCard extends StatelessWidget {
                   final store = context.read<SceneEvalStore>();
 
                   if (store.lastCapturedFrames.isNotEmpty) {
-                    // Convert diagnosis frames to FrameData
+                    // Convert raw diagnosis frames into UI-friendly frame data.
                     final frameDataList = diagnosis?.frames
                         .asMap()
                         .entries
@@ -99,7 +110,11 @@ class FrameOverviewCard extends StatelessWidget {
                     );
                   }
                 },
-                icon: const Icon(Icons.auto_awesome_mosaic_outlined, color: Colors.white, size: 18),
+                icon: const Icon(
+                  Icons.auto_awesome_mosaic_outlined,
+                  color: Colors.white,
+                  size: 18,
+                ),
                 label: Text(
                   'explore frames',
                   style: TextStyle(
@@ -131,13 +146,29 @@ class FrameOverviewCard extends StatelessWidget {
   }
 }
 
+/// Displays a labeled horizontal progress bar for one frame category.
+///
+/// The [_OverviewBarRow] shows the category label, proportional bar, and
+/// absolute frame count.
 class _OverviewBarRow extends StatelessWidget {
+  /// Category label displayed on the left side.
   final String label;
+
+  /// Number of frames in this category.
   final int value;
+
+  /// Proportional value used to fill the progress bar.
+  ///
+  /// Expected range is from `0.0` to `1.0`.
   final double ratio;
+
+  /// Gradient used to fill the progress bar.
   final Gradient gradient;
+
+  /// Color used for the label and frame count.
   final Color labelColor;
 
+  /// Creates a frame overview progress row.
   const _OverviewBarRow({
     required this.label,
     required this.value,
@@ -150,6 +181,7 @@ class _OverviewBarRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        // Category label.
         SizedBox(
           width: 98,
           child: Text(
@@ -163,12 +195,16 @@ class _OverviewBarRow extends StatelessWidget {
           ),
         ),
 
+        // Proportional progress bar.
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(999),
             child: Stack(
               children: [
+                // Background track.
                 Container(height: 18, color: Colors.white.withOpacity(0.06)),
+
+                // Filled portion based on the category ratio.
                 FractionallySizedBox(
                   widthFactor: ratio.clamp(0.0, 1.0),
                   child: Container(
@@ -183,6 +219,7 @@ class _OverviewBarRow extends StatelessWidget {
 
         const SizedBox(width: 12),
 
+        // Absolute frame count.
         SizedBox(
           width: 24,
           child: Text(

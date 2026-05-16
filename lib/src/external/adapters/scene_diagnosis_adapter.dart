@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-
 import '../../models/recommendation_group.dart';
 import '../../models/scene_diagnosis.dart';
 

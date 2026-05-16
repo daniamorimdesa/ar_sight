@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
+/// Displays a translucent container for scene evaluation states.
+///
+/// A [GlassBox] wraps the central state content shown during the camera
+/// evaluation flow, such as idle, capturing, uploading, and processing states.
 class GlassBox extends StatelessWidget {
+  /// Content displayed inside the glass-style container.
   final Widget child;
 
-  const GlassBox({required this.child});
+  /// Creates a translucent state container.
+  const GlassBox({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

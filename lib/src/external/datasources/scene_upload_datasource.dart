@@ -1,38 +1,47 @@
-// scene_upload_datasource.dart: responsável por enviar os frames para o backend e receber as informações de upload
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-
+import 'package:flutter/foundation.dart';
 import '../config/backend_session.dart';
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Interface abstrata para o datasource de upload de cena, definindo o método para enviar os frames para o backend e receber as informações de upload
+/// Defines the contract for uploading scene frames to a backend.
+///
+/// A [SceneUploadDatasource] receives a list of captured image frames and
+/// sends them to the backend so that they can be stored as a diagnosis batch.
 abstract class SceneUploadDatasource {
+  /// Uploads a list of image [frames] to the backend.
+  ///
+  /// Returns the raw upload response, which is expected to include the
+  /// generated batch identifier used by the diagnosis pipeline.
   Future<Map<String, dynamic>> uploadFrames(List<Uint8List> frames);
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Implementação concreta do SceneUploadDatasource usando a biblioteca Dio para fazer requisições HTTP para o backend
+/// HTTP implementation of [SceneUploadDatasource] using Dio.
+///
+/// This datasource sends captured frames to the active backend stored in
+/// [BackendSession] using a multipart/form-data request.
 class SceneUploadDatasourceImpl implements SceneUploadDatasource {
-  // Instância do Dio para realizar as requisições HTTP
+  /// HTTP client used to perform upload requests.
   final Dio dio;
+
+  /// Session object containing the active backend endpoint.
   final BackendSession backendSession;
 
+  /// Creates a scene upload datasource using the provided [dio] client and
+  /// [backendSession].
   SceneUploadDatasourceImpl(this.dio, this.backendSession);
 
-  // Método para enviar os frames para o backend e receber as informações de upload para cada frame, como o batch_id gerado no backend
+  /// Uploads captured image [frames] to the active backend.
+  ///
+  /// The backend expects each frame to be sent through the `files` multipart
+  /// field. The response must contain a `batch_id`, which is later used to
+  /// start and track the batch diagnosis process.
   @override
   Future<Map<String, dynamic>> uploadFrames(List<Uint8List> frames) async {
-    // Verifica se a lista de frames está vazia e lança uma exceção se for o caso, para evitar enviar uma requisição sem arquivos
     if (frames.isEmpty) {
-      throw Exception('Nenhum frame fornecido para upload');
+      throw Exception('No frames provided for upload.');
     }
 
-    // Cria um FormData para enviar os arquivos como multipart/form-data
     final formData = FormData();
 
-    // a rota usa "files" como nome do campo para os arquivos, então nomeamos cada frame como "files"
     for (int i = 0; i < frames.length; i++) {
       formData.files.add(
         MapEntry(
@@ -42,7 +51,6 @@ class SceneUploadDatasourceImpl implements SceneUploadDatasource {
       );
     }
 
-    // Envia uma requisição POST para o endpoint do backend responsável por fazer o upload dos frames, passando o FormData como corpo da requisição
     final response = await dio.post(
       '${backendSession.baseUrl}/upload/batch',
       data: formData,
@@ -52,16 +60,13 @@ class SceneUploadDatasourceImpl implements SceneUploadDatasource {
       ),
     );
 
-    // Retorna a resposta do backend como um mapa contendo as informações de upload para cada frame, como o batch_id gerado no backend
     final data = Map<String, dynamic>.from(response.data as Map);
 
-    // Verifica se a resposta contém o campo "batch_id" e lança uma exceção se não for encontrado
     if (!data.containsKey('batch_id')) {
-      throw Exception('Resposta inválida: batch_id não encontrado');
+      throw Exception('Invalid response: batch_id not found.');
     }
 
-    // Imprime a resposta do upload no console para fins de depuração
-    debugPrint('UPLOAD response: $data');
+    debugPrint('Upload response: $data');
 
     return data;
   }

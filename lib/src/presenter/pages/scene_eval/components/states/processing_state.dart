@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Displays the backend processing state during scene diagnosis.
+///
+/// A [ProcessingState] adapts its icon, message, accent color, and loading
+/// indicator according to the current diagnosis [status].
 class ProcessingState extends StatelessWidget {
+  /// Current backend diagnosis status.
+  ///
+  /// Expected values include `uploaded`, `upload_failed`, `processing`,
+  /// `completed`, `failed`, or another backend-defined status.
   final String status;
 
-  const ProcessingState({
-    super.key,
-    required this.status,
-  });
+  /// Creates a processing state widget for the provided [status].
+  const ProcessingState({super.key, required this.status});
 
+  /// Accent color associated with the current [status].
   Color get accent {
     switch (status) {
       case 'uploaded':
@@ -18,12 +25,14 @@ class ProcessingState extends StatelessWidget {
       case 'completed':
         return const Color(0xFF22C55E);
       case 'failed':
+      case 'upload_failed':
         return const Color(0xFFFF5B6A);
       default:
         return const Color(0xFF00D4FF);
     }
   }
 
+  /// User-facing message associated with the current [status].
   String get message {
     switch (status) {
       case 'uploaded':
@@ -32,6 +41,8 @@ class ProcessingState extends StatelessWidget {
         return 'Analyzing your scene...';
       case 'completed':
         return 'Diagnosis ready';
+      case 'upload_failed':
+        return 'Upload failed';
       case 'failed':
         return 'Analysis failed';
       default:
@@ -39,10 +50,13 @@ class ProcessingState extends StatelessWidget {
     }
   }
 
+  /// Whether the loading indicator should be displayed.
   bool get showLoader => status == 'processing';
 
+  /// Whether the animated cat image should be displayed.
   bool get showCat => status == 'processing';
 
+  /// Icon associated with non-processing states.
   IconData get icon {
     switch (status) {
       case 'uploaded':
@@ -50,6 +64,7 @@ class ProcessingState extends StatelessWidget {
       case 'completed':
         return Icons.check_circle_rounded;
       case 'failed':
+      case 'upload_failed':
         return Icons.error_rounded;
       default:
         return Icons.circle;
@@ -62,6 +77,7 @@ class ProcessingState extends StatelessWidget {
       key: key,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Animated visual indicator for the current processing status.
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           child: showCat
@@ -71,10 +87,7 @@ class ProcessingState extends StatelessWidget {
                   duration: const Duration(seconds: 2),
                   curve: Curves.easeInOut,
                   builder: (context, scale, child) {
-                    return Transform.scale(
-                      scale: scale,
-                      child: child,
-                    );
+                    return Transform.scale(scale: scale, child: child);
                   },
                   child: Image.asset(
                     'assets/icon/icon3_rm_bg.png',
@@ -92,6 +105,7 @@ class ProcessingState extends StatelessWidget {
 
         const SizedBox(height: 14),
 
+        // Status message shown below the visual indicator.
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           child: Text(
@@ -110,6 +124,7 @@ class ProcessingState extends StatelessWidget {
 
         const SizedBox(height: 18),
 
+        // Loading spinner shown only while diagnosis processing is active.
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           child: showLoader
@@ -122,10 +137,7 @@ class ProcessingState extends StatelessWidget {
                     valueColor: AlwaysStoppedAnimation<Color>(accent),
                   ),
                 )
-              : const SizedBox(
-                  key: ValueKey('no-loader'),
-                  height: 30,
-                ),
+              : const SizedBox(key: ValueKey('no-loader'), height: 30),
         ),
       ],
     );
