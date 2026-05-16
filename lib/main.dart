@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'src/presenter/pages/home/home_page.dart';
 import 'src/presenter/stores/scene_eval_store.dart';
@@ -7,18 +6,11 @@ import 'src/setup/store_factory.dart';
 
 /// Entry point of the ARSIGHT application.
 ///
-/// The function initializes Flutter bindings, attempts to load environment
-/// variables, builds the main [SceneEvalStore], and starts the application
-/// with dependency injection configured through [Provider].
+/// The function initializes Flutter bindings, builds the main [SceneEvalStore],
+/// and starts the application with dependency injection configured through
+/// [Provider].
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    await dotenv.load(fileName: '.env');
-  } catch (e) {
-    // Keep app startup resilient even when .env is missing or unreadable.
-    debugPrint('Could not load .env: $e');
-  }
 
   final store = await buildStore();
 
