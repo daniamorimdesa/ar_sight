@@ -9,6 +9,8 @@
 
 The app captures a short sequence of camera frames from a smartphone, uploads them to a configured backend, and displays a structured diagnosis with scene status, frame-level analysis, performance metrics, runtime setup information, and actionable recommendations.
 
+![Visual Identity](docs/images/arsight_banner.png)
+
 This project was developed as part of a TCC research prototype focused on hybrid scene diagnosis pipelines for AR, combining deterministic image processing, backend inference, and user-facing explanations.
 
 ---
