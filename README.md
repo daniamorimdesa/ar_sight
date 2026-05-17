@@ -339,15 +339,9 @@ For backend integration details and setup instructions, see [Backend Integration
 
 ## Research & Academic Context
 
-ARSight was developed as the final project for the Robotics and Artificial Intelligence Residency / Postgraduate Program at CIn-UFPE, investigating hybrid scene diagnosis pipelines for augmented reality.
+ARSight was developed as the final project for the Robotics and Artificial Intelligence Residency / Postgraduate Program at CIn-UFPE, Cohort 4, investigating hybrid scene diagnosis pipelines for augmented reality.
 
 The project combines mobile scene capture, deterministic image processing, and small language model explanations to produce structured, explainable, and resource-aware scene diagnostics. The mobile app acts as the user-facing interface, connecting camera-based scene capture to backend diagnosis services deployed on different hardware environments (desktop, embedded Jetson devices).
-
----
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -355,5 +349,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 **Daniela Amorim de Sá**  
 Electronic Engineer from the Federal University of Pernambuco (UFPE)  
-Robotics and Artificial Intelligence Residency / Postgraduate Program - CIn-UFPE
+Robotics and Artificial Intelligence Residency / Postgraduate Program - CIn-UFPE, Cohort 4  
+GitHub: [daniamorimdesa](https://github.com/daniamorimdesa)
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
