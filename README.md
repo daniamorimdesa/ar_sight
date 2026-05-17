@@ -55,6 +55,10 @@ ARSight helps users understand whether a physical environment is suitable for au
 
 ## Architecture
 
+The complete ARSight workflow from capture to diagnosis results:
+
+![Pipeline Diagram](docs/images/pipeline_diagram.svg)
+
 ARSight follows a layered Flutter architecture with external data sources, adapters, models, MobX state management, and presentation components.
 
 ```
@@ -319,34 +323,6 @@ The app also displays backend-reported metrics, including:
 - Human-readable recommendations for improving scene conditions
 - Embedded backend validation with Jetson devices
 - Edge AI benchmarking for visual diagnosis pipelines
-
----
-
-## Pipeline & Screenshots
-
-### Diagnosis Pipeline
-
-The complete ARSight workflow from capture to diagnosis results:
-
-![Pipeline Diagram](docs/images/pipeline_diagram.svg)
-
-### Application Overview
-
-Screenshots from the ARSight mobile interface demonstrating the complete diagnostic workflow:
-
-<div align="center">
-  <img src="docs/images/home_page.png" width="22%" alt="Home Screen">
-  <img src="docs/images/result5.png" width="22%" alt="Result - HIGH Risk">
-  <img src="docs/images/result_1.png" width="22%" alt="Result - LOW Risk">
-  <img src="docs/images/result5_2.png" width="22%" alt="Performance Metrics">
-  
-  <p style="font-size: 0.85em; margin-top: 10px;">
-    <strong>ARSight Application Overview:</strong> (1) Home screen where the user initiates scene capture; 
-    (2) Diagnostic result indicating scene adjustment required (risk: HIGH, dominant condition: underexposed); 
-    (3) Passing result with adequate illumination (risk: LOW); 
-    (4) Performance panel displaying processing time metrics and runtime configuration.
-  </p>
-</div>
 
 ---
 
