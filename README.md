@@ -41,6 +41,8 @@ The app is designed to connect to multiple configured backend environments, incl
 
 ## Application Workflow
 
+![App demo](docs/images/arsight_demo.gif)
+
 ARSight follows a four-phase workflow:
 
 ### 1. Capture
