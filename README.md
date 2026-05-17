@@ -1,11 +1,11 @@
-# AR Sight
+# ARSight
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.13.0+-02569B?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.1+-0175C2?logo=dart)
 ![MobX](https://img.shields.io/badge/MobX-2.6.0-FF6F00)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**AR Sight** is a mobile Flutter application for augmented reality scene readiness diagnosis.
+**ARSight** is a mobile Flutter application for augmented reality scene readiness diagnosis.
 
 The app captures a short sequence of camera frames from a smartphone, uploads them to a configured backend, and displays a structured diagnosis with scene status, frame-level analysis, performance metrics, runtime setup information, and actionable recommendations.
 
@@ -17,7 +17,7 @@ This project was developed as part of a TCC research prototype focused on hybrid
 
 ## Overview
 
-AR Sight helps users understand whether a physical environment is suitable for augmented reality experiences.
+ARSight helps users understand whether a physical environment is suitable for augmented reality experiences.
 
 The current prototype focuses on mobile scene capture and backend-assisted diagnosis. The intended usage is a smartphone-based scan: the user points the phone at the environment, captures a short sequence of frames, and receives feedback about scene conditions that may affect AR tracking stability.
 
@@ -39,7 +39,7 @@ The app is designed to connect to multiple configured backend environments, incl
 
 ## Application Workflow
 
-AR Sight follows a four-phase workflow:
+ARSight follows a four-phase workflow:
 
 ### 1. Capture
 
@@ -74,7 +74,7 @@ The final backend response is adapted into structured UI models and displayed th
 
 ## Architecture
 
-AR Sight follows a layered Flutter architecture with external data sources, adapters, models, MobX state management, and presentation components.
+ARSight follows a layered Flutter architecture with external data sources, adapters, models, MobX state management, and presentation components.
 
 ```
 lib/
@@ -103,7 +103,7 @@ lib/
 
 ### Mobile-First Design
 
-Although Flutter supports multiple platforms, AR Sight is designed primarily as a mobile application.
+Although Flutter supports multiple platforms, ARSight is designed primarily as a mobile application.
 
 The core interaction depends on smartphone camera usage and physical movement through a real environment. For this reason, the main target is mobile deployment, especially Android during development and validation.
 
@@ -371,13 +371,13 @@ The app also displays backend-reported metrics, including:
 
 ### Diagnosis Pipeline
 
-The complete AR Sight workflow from capture to diagnosis results:
+The complete ARSight workflow from capture to diagnosis results:
 
 ![Pipeline Diagram](docs/images/pipeline_diagram.svg)
 
 ### Application Overview
 
-Screenshots from the AR Sight mobile interface demonstrating the complete diagnostic workflow:
+Screenshots from the ARSight mobile interface demonstrating the complete diagnostic workflow:
 
 <div align="center">
   <img src="docs/images/home_page.png" width="22%" alt="Home Screen">
@@ -386,7 +386,7 @@ Screenshots from the AR Sight mobile interface demonstrating the complete diagno
   <img src="docs/images/result5_2.png" width="22%" alt="Performance Metrics">
   
   <p style="font-size: 0.85em; margin-top: 10px;">
-    <strong>AR Sight Application Overview:</strong> (1) Home screen where the user initiates scene capture; 
+    <strong>ARSight Application Overview:</strong> (1) Home screen where the user initiates scene capture; 
     (2) Diagnostic result indicating scene adjustment required (risk: HIGH, dominant condition: underexposed); 
     (3) Passing result with adequate illumination (risk: LOW); 
     (4) Performance panel displaying processing time metrics and runtime configuration.
@@ -397,7 +397,7 @@ Screenshots from the AR Sight mobile interface demonstrating the complete diagno
 
 ## Related Repositories
 
-The AR Sight mobile application integrates with diagnosis backends. The following repositories contain the backend services used in this project:
+The ARSight mobile application integrates with diagnosis backends. The following repositories contain the backend services used in this project:
 
 - **[backend_tcc_ar_sight](https://github.com/daniamorimdesa/backend_tcc_ar_sight)** — Primary backend reference implementation for AR scene diagnosis
 - **[backend_tcc_mvp](https://github.com/daniamorimdesa/backend_tcc_mvp)** — Minimum viable product backend used during TCC research and validation
@@ -423,7 +423,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 ## Academic Context
 
-AR Sight was developed as the final project for the Robotics and Artificial Intelligence Residency / Postgraduate Program at CIn-UFPE.
+ARSight was developed as the final project for the Robotics and Artificial Intelligence Residency / Postgraduate Program at CIn-UFPE.
 
 The project is connected to a TCC research prototype investigating hybrid scene diagnosis pipelines for augmented reality, combining mobile scene capture, deterministic image processing, small language model explanations, and embedded backend deployment constraints.
 
