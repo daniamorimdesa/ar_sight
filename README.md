@@ -45,17 +45,12 @@ ARSight helps users understand whether a physical environment is suitable for au
 - **UI Development Mode** — Fake datasources for testing without a real backend
 - **Reactive State Management** — MobX-based responsive UI updates
 
-### Workflow Visualization
-
-![App workflow](docs/images/arsight_workflow.png)
-
-
 
 ---
 
 ## Architecture
 
-The complete ARSight workflow from capture to diagnosis results:
+The complete ARSight pipeline from capture to diagnosis results:
 
 ![Pipeline Diagram](docs/images/pipeline_diagram.svg)
 
@@ -86,6 +81,13 @@ lib/
 - **BackendResolver**: Checks configured backend candidates and selects the first available backend.
 - **BackendSession**: Stores the active backend and exposes its URL, timeouts, and polling configuration.
 
+
+### Workflow Visualization
+
+![App workflow](docs/images/arsight_workflow.png)
+
+
+
 ---
 
 ## Backend Configuration
@@ -110,37 +112,7 @@ Then copy it locally:
 cp lib/src/external/config/api_config.example.dart lib/src/external/config/api_config.dart
 ```
 
-### Example Configuration
-
-```dart
-import 'backend_candidate.dart';
-
-class ApiConfig {
-  static const List<BackendCandidate> candidates = [
-    BackendCandidate(
-      name: 'Jetson Orin',
-      baseUrl: 'http://your-jetson-orin-host.local:8000',
-      healthCheckTimeout: Duration(seconds: 5),
-      diagnosisTimeout: Duration(seconds: 30),
-      pollingIntervalSeconds: 1,
-    ),
-    BackendCandidate(
-      name: 'Jetson Nano',
-      baseUrl: 'http://your-jetson-nano-host.local:8000',
-      healthCheckTimeout: Duration(seconds: 15),
-      diagnosisTimeout: Duration(seconds: 240),
-      pollingIntervalSeconds: 5,
-    ),
-    BackendCandidate(
-      name: 'Desktop Workstation',
-      baseUrl: 'http://your-desktop-host.local:8000',
-      healthCheckTimeout: Duration(seconds: 5),
-      diagnosisTimeout: Duration(seconds: 30),
-      pollingIntervalSeconds: 1,
-    ),
-  ];
-}
-```
+For detailed configuration examples and backend setup instructions, see [Backend Integration](docs/BACKEND_INTEGRATION.md).
 
 
 ## Getting Started
