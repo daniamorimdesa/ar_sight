@@ -21,6 +21,8 @@ ARSight helps users understand whether a physical environment is suitable for au
 
 The current prototype focuses on mobile scene capture and backend-assisted diagnosis. The intended usage is a smartphone-based scan: the user points the phone at the environment, captures a short sequence of frames, and receives feedback about scene conditions that may affect AR tracking stability.
 
+![App workflow](docs/images/arsight_workflow.png)
+
 The app is designed to connect to multiple configured backend environments, including desktop and embedded Jetson devices, while keeping the user experience centered on mobile capture.
 
 ---
@@ -100,14 +102,6 @@ lib/
 - **SceneEvalStore**: MobX store responsible for coordinating capture, upload, diagnosis, polling, result storage, and UI state updates.
 - **BackendResolver**: Checks configured backend candidates and selects the first available backend.
 - **BackendSession**: Stores the active backend and exposes its URL, timeouts, and polling configuration.
-
-### Mobile-First Design
-
-Although Flutter supports multiple platforms, ARSight is designed primarily as a mobile application.
-
-The core interaction depends on smartphone camera usage and physical movement through a real environment. For this reason, the main target is mobile deployment, especially Android during development and validation.
-
-Desktop or web builds are not the primary goal of this project, because the diagnostic flow depends on camera-based scene scanning in an AR-like usage context.
 
 ---
 
