@@ -17,64 +17,39 @@ This project was developed as part of a TCC research prototype focused on hybrid
 
 ## Overview
 
-ARSight helps users understand whether a physical environment is suitable for augmented reality experiences.
+ARSight helps users understand whether a physical environment is suitable for augmented reality experiences through a smartphone-based scan workflow. The app is designed to connect to multiple configured backend environments, including desktop and embedded Jetson devices, while keeping the user experience centered on mobile capture.
 
-The current prototype focuses on mobile scene capture and backend-assisted diagnosis. The intended usage is a smartphone-based scan: the user points the phone at the environment, captures a short sequence of frames, and receives feedback about scene conditions that may affect AR tracking stability.
+### How It Works
 
-![App workflow](docs/images/arsight_workflow.png)
+1. **Capture** — The mobile device camera captures 10 frames over a 10-second scan. Users are guided to move slowly, keep steady, capture textured surfaces, and avoid reflections or motion blur.
 
-The app is designed to connect to multiple configured backend environments, including desktop and embedded Jetson devices, while keeping the user experience centered on mobile capture.
+2. **Upload** — Captured frames are sent to the backend as a batch using multipart upload. The backend returns a batch_id for tracking diagnosis.
 
----
+3. **Diagnosis** — The app starts backend diagnosis and polls its status until processing completes or fails. Polling interval is configured per backend candidate.
 
-## What It Does
+4. **Results** — The final response is adapted into structured UI models displaying scene summary, frame overview, recommendations, performance metrics, runtime setup, and frame-level inspection.
 
-- **Mobile Frame Capture**: Captures 10 frames over a 10-second scan using the device camera.
-- **Batch Upload**: Sends captured frames to a configured backend using multipart upload.
-- **Backend Diagnosis**: Starts diagnosis, polls processing status, and retrieves the final result.
-- **Scene Readiness Report**: Displays pass/fail status, risk level, dominant condition, recommendations, and runtime metrics.
-- **Frame Inspection**: Allows users to review captured frames and inspect frame-level diagnosis details.
-- **Multi-Backend Setup**: Resolves available backend candidates through health checks.
-- **Mobile-First Experience**: Built primarily for smartphone-based AR scene scanning.
-
----
-
-## Application Workflow
 
 <div align="center">
   <img src="docs/images/arsight_demo.gif" alt="App demo">
 </div>
 
-ARSight follows a four-phase workflow:
 
-### 1. Capture
+### Key Features
 
-The mobile device camera captures a short sequence of frames during a 10-second scan.
+- **Scene Readiness Assessment** — Displays pass/fail status, risk level, dominant condition, and actionable recommendations
+- **Mobile Frame Capture** — 10-second capture flow with progress feedback
+- **Batch Upload** — Multipart frame upload to configured backends
+- **Frame Inspection** — Review captured frames and inspect frame-level diagnosis details
+- **Multi-Backend Support** — Resolves available backend candidates through health checks
+- **UI Development Mode** — Fake datasources for testing without a real backend
+- **Reactive State Management** — MobX-based responsive UI updates
 
-The user is guided to move slowly, keep the phone steady, capture textured surfaces, and avoid reflections or motion blur.
+### Workflow Visualization
 
-### 2. Upload
+![App workflow](docs/images/arsight_workflow.png)
 
-The captured frames are sent to the backend as a batch using multipart upload.
 
-The backend returns a batch_id, which is used to start and track the diagnosis process.
-
-### 3. Diagnosis
-
-The app starts the backend diagnosis for the uploaded batch and polls its status until processing is completed or failed.
-
-The polling interval is configured per backend candidate, allowing slower embedded platforms to use longer intervals.
-
-### 4. Results
-
-The final backend response is adapted into structured UI models and displayed through result sections:
-
-- Scene summary
-- Frame overview
-- Recommendations
-- Performance metrics
-- Runtime setup
-- Frame-level inspection
 
 ---
 
@@ -106,24 +81,6 @@ lib/
 - **SceneEvalStore**: MobX store responsible for coordinating capture, upload, diagnosis, polling, result storage, and UI state updates.
 - **BackendResolver**: Checks configured backend candidates and selects the first available backend.
 - **BackendSession**: Stores the active backend and exposes its URL, timeouts, and polling configuration.
-
----
-
-## Features
-
-- Mobile camera-based scene scanning
-- 10-second capture flow with progress feedback
-- Batch upload of captured frames
-- Backend status polling
-- Frame-level diagnosis visualization
-- Recommendations grouped by scene condition
-- Last captured frames shortcut
-- Last diagnosis shortcut
-- Runtime setup display
-- Performance metrics display
-- Fake datasources for UI development and testing
-- Configurable backend candidates
-- MobX-based reactive state management
 
 ---
 
@@ -404,26 +361,17 @@ For backend integration details and setup instructions, see [Backend Integration
 
 ---
 
-## Research Context
+## Research & Academic Context
 
-This application is part of a TCC project investigating hybrid scene diagnosis pipelines for augmented reality.
+ARSight was developed as the final project for the Robotics and Artificial Intelligence Residency / Postgraduate Program at CIn-UFPE, investigating hybrid scene diagnosis pipelines for augmented reality.
 
-The broader research explores how deterministic image processing and small language models can be combined to produce structured, explainable, and resource-aware scene diagnostics for AR environments.
-
-The mobile app acts as the user-facing interface of the system, connecting camera-based scene capture to backend diagnosis services deployed on different hardware environments.
+The project combines mobile scene capture, deterministic image processing, and small language model explanations to produce structured, explainable, and resource-aware scene diagnostics. The mobile app acts as the user-facing interface, connecting camera-based scene capture to backend diagnosis services deployed on different hardware environments (desktop, embedded Jetson devices).
 
 ---
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-## Academic Context
-
-ARSight was developed as the final project for the Robotics and Artificial Intelligence Residency / Postgraduate Program at CIn-UFPE.
-
-The project is connected to a TCC research prototype investigating hybrid scene diagnosis pipelines for augmented reality, combining mobile scene capture, deterministic image processing, small language model explanations, and embedded backend deployment constraints.
 
 ---
 
