@@ -41,7 +41,9 @@ The app is designed to connect to multiple configured backend environments, incl
 
 ## Application Workflow
 
-![App demo](docs/images/arsight_demo.gif)
+<div align="center">
+  <img src="docs/images/arsight_demo.gif" alt="App demo">
+</div>
 
 ARSight follows a four-phase workflow:
 
